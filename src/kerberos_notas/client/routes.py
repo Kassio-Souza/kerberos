@@ -1,3 +1,23 @@
+"""
+@file routes.py
+@brief Aplicação web Flask que consome o fluxo Kerberos Notas.
+
+@details
+Define as rotas de login, listagem e criação de notas, executando autenticação
+Kerberos por sockets e validando AP-REP para autenticação mútua.
+
+Componentes principais:
+- autenticar_com_kerberos
+- validar_autenticacao_mutua
+- listar_notas_protegidas
+- criar_nota_protegida
+- create_app
+
+Papel na arquitetura:
+Representa o cliente web que inicia o fluxo AS/TGS e acessa o Serviço de Notas
+protegido.
+"""
+
 from pathlib import Path
 import uuid
 from kerberos_notas.rede.logs import log_titulo, log_passo, log_ok, log_dados
@@ -34,7 +54,33 @@ DISCIPLINAS_PADRAO = [
 
 def agrupar_notas_por_aluno(notas: list) -> dict:
     """
-    Agrupa as notas pelo nome do aluno para facilitar a visualização do professor.
+    ***************************************************************************
+    Função: agrupar_notas_por_aluno
+
+    @brief Agrupa notas pelo nome do aluno.
+
+    Descrição:
+    Percorre a lista de notas retornada pelo serviço e monta um dicionário
+    ordenado por aluno para facilitar a visualização do professor.
+
+    Parâmetros:
+    @param notas Lista de dicionários de nota.
+
+    Valor retornado:
+    @return Retorna dict em que cada chave é o nome do aluno e o valor é lista de notas.
+
+    Assertiva de entrada:
+    @pre notas deve ser iterável e conter dicionários.
+
+    Assertiva de saída:
+    @post Retorna agrupamento ordenado alfabeticamente pelas chaves.
+
+    Exceções:
+    @throws Exception Pode propagar AttributeError se algum item não possuir método get.
+
+    Observações:
+    É uma função de apresentação; não altera dados nem credenciais Kerberos.
+    ***************************************************************************
     """
     notas_por_aluno = {}
 
@@ -51,10 +97,34 @@ def agrupar_notas_por_aluno(notas: list) -> dict:
 
 def obter_salt_usuario(usuario: str) -> str:
     """
-    O cliente precisa do salt do usuário para derivar a chave a partir da senha.
+    ***************************************************************************
+    Função: obter_salt_usuario
 
-    Neste projeto acadêmico, o salt fica salvo no arquivo data/usuarios.json.
-    O salt não é secreto, por isso pode ser consultado pelo cliente.
+    @brief Obtém o salt cadastrado para um usuário.
+
+    Descrição:
+    Lê o arquivo de usuários e retorna o salt necessário para derivar localmente
+    a chave do cliente a partir da senha informada.
+
+    Parâmetros:
+    @param usuario Nome do usuário autenticado.
+
+    Valor retornado:
+    @return Retorna string Base64 do salt do usuário.
+
+    Assertiva de entrada:
+    @pre usuario != None
+    @pre O usuário deve existir no arquivo de cadastro.
+
+    Assertiva de saída:
+    @post Retorna salt usado pela KDF do cliente.
+
+    Exceções:
+    @throws ValueError se o usuário não existir.
+
+    Observações:
+    O salt não é secreto; a senha não é lida do arquivo nesta função.
+    ***************************************************************************
     """
     dados = carregar_json(CAMINHO_USUARIOS)
     usuarios = dados.get("usuarios", {})
@@ -67,7 +137,37 @@ def obter_salt_usuario(usuario: str) -> str:
 
 def autenticar_com_kerberos(usuario: str, senha: str) -> dict:
     """
-    Executa o fluxo Kerberos usando sockets.
+    ***************************************************************************
+    Função: autenticar_com_kerberos
+
+    @brief Executa o fluxo Kerberos inicial via sockets.
+
+    Descrição:
+    Chama o AS, deriva a chave do cliente com senha e salt, abre a resposta do
+    AS, cria autenticador para o TGS, solicita ticket de serviço e abre a parte
+    da resposta destinada ao cliente.
+
+    Parâmetros:
+    @param usuario Nome do usuário do login.
+    @param senha Senha informada no formulário.
+
+    Valor retornado:
+    @return Retorna dict com ticket_servico e chave_sessao_servico.
+
+    Assertiva de entrada:
+    @pre usuario != None
+    @pre senha != None
+    @pre AS e TGS devem estar disponíveis nas portas configuradas.
+
+    Assertiva de saída:
+    @post Retorna credenciais para acessar o serviço de notas.
+
+    Exceções:
+    @throws Exception Propaga ValueError de autenticação, erros de rede e erros de descriptografia.
+
+    Observações:
+    Esta função concentra as etapas cliente do AS-REQ/AS-REP e TGS-REQ/TGS-REP.
+    ***************************************************************************
     """
 
     log_titulo("CLIENTE WEB", "Iniciando fluxo Kerberos completo")
@@ -183,7 +283,36 @@ def validar_autenticacao_mutua(
         nonce_enviado: str,
 ) -> bool:
     """
-    Valida o AP-REP retornado pelo serviço de notas.
+    ***************************************************************************
+    Função: validar_autenticacao_mutua
+
+    @brief Valida o AP-REP retornado pelo serviço de notas.
+
+    Descrição:
+    Descriptografa o AP-REP com a chave Cliente-Serviço e confirma se o serviço
+    devolveu timestamp incrementado e o mesmo nonce enviado pelo cliente.
+
+    Parâmetros:
+    @param chave_sessao_servico Chave Cliente-Serviço em Base64.
+    @param ap_rep Resposta criptografada de autenticação mútua.
+    @param timestamp_enviado Timestamp usado no autenticador do cliente.
+    @param nonce_enviado Nonce usado no autenticador do cliente.
+
+    Valor retornado:
+    @return Retorna True quando a autenticação mútua é confirmada.
+
+    Assertiva de entrada:
+    @pre ap_rep deve estar cifrado com a chave Cliente-Serviço correta.
+
+    Assertiva de saída:
+    @post Retorna True ou lança ValueError em inconsistência.
+
+    Exceções:
+    @throws ValueError se AP-REP, timestamp ou nonce não forem confirmados.
+
+    Observações:
+    Confirma que o serviço conhece a chave de sessão e, portanto, é o serviço esperado.
+    ***************************************************************************
     """
 
     log_passo(
@@ -219,7 +348,35 @@ def listar_notas_protegidas(
         chave_sessao_servico: str,
 ) -> list:
     """
-    Lista notas usando socket para se comunicar com o Serviço de Notas.
+    ***************************************************************************
+    Função: listar_notas_protegidas
+
+    @brief Lista notas usando ticket e autenticador Kerberos.
+
+    Descrição:
+    Cria autenticador Cliente-Serviço com timestamp e nonce, chama o Serviço de
+    Notas e valida o AP-REP antes de retornar a lista.
+
+    Parâmetros:
+    @param usuario Usuário autenticado na sessão web.
+    @param ticket_servico Ticket emitido pelo TGS.
+    @param chave_sessao_servico Chave Cliente-Serviço em Base64.
+
+    Valor retornado:
+    @return Retorna lista de notas.
+
+    Assertiva de entrada:
+    @pre ticket_servico e chave_sessao_servico devem estar na sessão Flask.
+
+    Assertiva de saída:
+    @post Retorna notas apenas após autenticação mútua válida.
+
+    Exceções:
+    @throws Exception Propaga erros do serviço, rede, criptografia ou validação AP-REP.
+
+    Observações:
+    A função implementa a etapa AP-REQ/AP-REP do cliente para listagem.
+    ***************************************************************************
     """
 
     timestamp_enviado = timestamp_atual()
@@ -257,7 +414,39 @@ def criar_nota_protegida(
         chave_sessao_servico: str,
 ) -> dict:
     """
-    Cria uma nota usando socket para se comunicar com o Serviço de Notas.
+    ***************************************************************************
+    Função: criar_nota_protegida
+
+    @brief Cria nota usando credenciais Kerberos de serviço.
+
+    Descrição:
+    Gera autenticador Cliente-Serviço, envia os dados da nota ao Serviço de Notas
+    e valida o AP-REP antes de retornar a nota criada.
+
+    Parâmetros:
+    @param usuario Professor autenticado.
+    @param aluno Aluno que receberá a nota.
+    @param disciplina Disciplina informada.
+    @param valor Valor textual da nota.
+    @param ticket_servico Ticket de serviço emitido pelo TGS.
+    @param chave_sessao_servico Chave Cliente-Serviço em Base64.
+
+    Valor retornado:
+    @return Retorna dict da nota criada.
+
+    Assertiva de entrada:
+    @pre Credenciais Kerberos devem existir na sessão.
+    @pre aluno, disciplina e valor são validados no serviço.
+
+    Assertiva de saída:
+    @post Retorna a nota apenas se o serviço confirmar AP-REP.
+
+    Exceções:
+    @throws Exception Propaga erros de autorização, serviço, rede ou autenticação mútua.
+
+    Observações:
+    A autorização de professor é aplicada no serviço protegido.
+    ***************************************************************************
     """
 
     timestamp_enviado = timestamp_atual()
@@ -290,6 +479,35 @@ def criar_nota_protegida(
 
 
 def create_app():
+    """
+    ***************************************************************************
+    Função: create_app
+
+    @brief Cria e configura a aplicação Flask do cliente.
+
+    Descrição:
+    Instancia Flask, configura templates, arquivos estáticos, chave de sessão e
+    registra as rotas web usadas no sistema de notas.
+
+    Parâmetros:
+    Não recebe parâmetros explícitos.
+
+    Valor retornado:
+    @return Retorna instância Flask configurada.
+
+    Assertiva de entrada:
+    @pre Templates e arquivos estáticos devem existir nos caminhos esperados.
+
+    Assertiva de saída:
+    @post Retorna aplicação com rotas de login, notas e logout.
+
+    Exceções:
+    @throws Exception Não trata exceções de configuração do Flask explicitamente.
+
+    Observações:
+    A sessão Flask armazena ticket de serviço e chave de sessão Cliente-Serviço.
+    ***************************************************************************
+    """
     app = Flask(
         __name__,
         template_folder=str(BASE_DIR / "templates"),
@@ -300,10 +518,68 @@ def create_app():
 
     @app.route("/")
     def index():
+        """
+        ***************************************************************************
+        Função: index
+
+        @brief Redireciona a página inicial para o login.
+
+        Descrição:
+        Implementa a rota raiz da aplicação web e direciona o usuário para a
+        rota de autenticação.
+
+        Parâmetros:
+        Não recebe parâmetros explícitos.
+
+        Valor retornado:
+        @return Retorna resposta Flask de redirecionamento.
+
+        Assertiva de entrada:
+        @pre A rota login deve estar registrada.
+
+        Assertiva de saída:
+        @post Cliente recebe redirecionamento HTTP para /login.
+
+        Exceções:
+        @throws Exception Pode propagar erros do Flask em geração de URL.
+
+        Observações:
+        Não participa diretamente da criptografia Kerberos.
+        ***************************************************************************
+        """
         return redirect(url_for("login"))
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
+        """
+        ***************************************************************************
+        Função: login
+
+        @brief Processa tela e envio de credenciais de login.
+
+        Descrição:
+        Em GET renderiza o formulário; em POST valida campos, executa
+        autenticar_com_kerberos e grava credenciais de serviço na sessão.
+
+        Parâmetros:
+        Não recebe parâmetros explícitos.
+
+        Valor retornado:
+        @return Retorna página HTML ou redirecionamento Flask.
+
+        Assertiva de entrada:
+        @pre Para POST, usuário e senha devem ser informados.
+
+        Assertiva de saída:
+        @post Em sucesso, sessão contém usuário, ticket_servico e chave_sessao_servico.
+
+        Exceções:
+        @throws Exception Captura exceções do fluxo Kerberos e renderiza página de erro.
+
+        Observações:
+        A senha não é armazenada na sessão; é usada para derivação de chave.
+        ***************************************************************************
+        """
         if request.method == "GET":
             return render_template("login.html")
 
@@ -331,6 +607,35 @@ def create_app():
 
     @app.route("/notas", methods=["GET", "POST"])
     def notas():
+            """
+            ***************************************************************************
+            Função: notas
+
+            @brief Exibe notas e processa criação de notas.
+
+            Descrição:
+            Valida sessão Kerberos, lista notas em GET e, em POST, envia uma ou
+            mais notas ao serviço protegido quando o usuário é professor.
+
+            Parâmetros:
+            Não recebe parâmetros explícitos.
+
+            Valor retornado:
+            @return Retorna HTML renderizado ou redirecionamento Flask.
+
+            Assertiva de entrada:
+            @pre Sessão deve conter usuario, ticket_servico e chave_sessao_servico.
+
+            Assertiva de saída:
+            @post Exibe notas autenticadas ou registra notas via serviço protegido.
+
+            Exceções:
+            @throws Exception Captura exceções de acesso ao serviço e renderiza página de erro.
+
+            Observações:
+            A rota usa AP-REQ/AP-REP a cada operação protegida.
+            ***************************************************************************
+            """
             if "usuario" not in session:
                 flash("Faça login para acessar o sistema de notas.")
                 return redirect(url_for("login"))
@@ -424,6 +729,35 @@ def create_app():
 
     @app.route("/logout")
     def logout():
+        """
+        ***************************************************************************
+        Função: logout
+
+        @brief Encerra a sessão web do usuário.
+
+        Descrição:
+        Remove dados da sessão Flask, incluindo credenciais Kerberos armazenadas
+        para o serviço de notas, e redireciona para login.
+
+        Parâmetros:
+        Não recebe parâmetros explícitos.
+
+        Valor retornado:
+        @return Retorna resposta Flask de redirecionamento.
+
+        Assertiva de entrada:
+        @pre A sessão Flask deve estar disponível.
+
+        Assertiva de saída:
+        @post Sessão fica limpa após session.clear.
+
+        Exceções:
+        @throws Exception Pode propagar erros do Flask em flash ou redirecionamento.
+
+        Observações:
+        Não revoga tickets no servidor; apenas remove credenciais locais da sessão.
+        ***************************************************************************
+        """
         session.clear()
         flash("Você saiu do sistema.")
         return redirect(url_for("login"))

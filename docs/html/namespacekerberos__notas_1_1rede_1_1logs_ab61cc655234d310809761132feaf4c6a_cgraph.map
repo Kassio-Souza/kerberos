@@ -1,0 +1,10 @@
+<map id="kerberos_notas.rede.logs.sanitizar" name="kerberos_notas.rede.logs.sanitizar">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,45,251,70"/>
+<area shape="rect" id="Node000002" href="$namespacekerberos__notas_1_1rede_1_1logs.html#ab6e0d599afc30dae4b6515b72522a2fd" title=" " alt="" coords="299,37,488,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,55,285,55,285,60,251,60"/>
+<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="349,38,346,28,354,18,369,13,393,11,421,14,436,21,434,26,420,19,393,16,370,18,357,23,352,29,354,36"/>
+<area shape="rect" id="Node000003" href="$namespacekerberos__notas_1_1rede_1_1logs.html#a593dccaa70572ae39e1bacc2ba85405f" title=" " alt="" coords="536,5,725,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="488,42,522,37,523,43,488,47"/>
+<area shape="rect" id="Node000004" href="$namespacekerberos__notas_1_1rede_1_1logs.html#aff2b62865cba44425e6c48285f291531" title=" " alt="" coords="536,69,725,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="488,67,523,72,522,77,488,73"/>
+</map>

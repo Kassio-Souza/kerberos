@@ -1,0 +1,16 @@
+<map id="kerberos_notas.client.routes.create_app" name="kerberos_notas.client.routes.create_app">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,109,288,134"/>
+<area shape="rect" id="Node000002" href="$namespacekerberos__notas_1_1client_1_1routes.html#adcdfc62f728a08326dff1fcccf14423d" title=" " alt="" coords="344,5,604,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,106,335,55,368,46,369,51,337,60,183,111"/>
+<area shape="rect" id="Node000003" href="$namespacekerberos__notas_1_1client_1_1routes.html#ae90aa7462697cc6327b71d7defe85e81" title=" " alt="" coords="336,69,612,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="277,106,322,102,322,107,277,111"/>
+<area shape="rect" id="Node000005" href="$namespacekerberos__notas_1_1client_1_1routes.html#ad9d378373422ff614648b850aee3d0cc" title=" " alt="" coords="355,133,593,173"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="277,131,341,138,341,143,277,137"/>
+<area shape="rect" id="Node000007" href="$namespacekerberos__notas_1_1client_1_1routes.html#a4871d9e4ff8c208844896d1720d0d22d" title=" " alt="" coords="353,197,595,237"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="183,131,337,183,369,192,368,197,335,188,181,137"/>
+<area shape="rect" id="Node000004" href="$namespacekerberos__notas_1_1client_1_1routes.html#ae9e7f48bbe50598cbdb228a5b9d6b0c6" title=" " alt="" coords="665,69,909,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="612,87,652,87,652,92,612,92"/>
+<area shape="rect" id="Node000006" href="$namespacekerberos__notas_1_1client_1_1routes.html#afd93c050f05aae64ca5741b42573c9f4" title=" " alt="" coords="660,165,915,205"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="594,163,647,168,646,174,593,168"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="595,202,646,197,646,202,596,208"/>
+</map>

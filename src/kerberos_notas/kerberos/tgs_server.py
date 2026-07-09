@@ -1,3 +1,22 @@
+"""
+@file tgs_server.py
+@brief Lógica do Ticket Granting Server do Kerberos Notas.
+
+@details
+Valida TGT e autenticador Cliente-TGS, identifica a chave do serviço e emite
+ticket de serviço com chave de sessão Cliente-Serviço.
+
+Componentes principais:
+- validar_tgt
+- validar_autenticador
+- emitir_ticket_servico
+- abrir_ticket_servico
+
+Papel na arquitetura:
+Representa o TGS, etapa intermediária entre autenticação inicial e acesso ao
+serviço protegido.
+"""
+
 from kerberos_notas.config import CHAVE_SECRETA_SERVICO_NOTAS, CHAVE_SECRETA_TGS
 from kerberos_notas.crypto.crypto_utils import (
     base64_para_bytes,
@@ -23,6 +42,36 @@ CHAVES_SERVICOS = {
 
 
 def obter_chave_servico(servico: str) -> bytes:
+    """
+    ***************************************************************************
+    Função: obter_chave_servico
+
+    @brief Retorna a chave secreta do serviço solicitado.
+
+    Descrição:
+    Consulta o mapa local de serviços conhecidos e obtém a chave usada para
+    criptografar ou abrir tickets daquele serviço.
+
+    Parâmetros:
+    @param servico Nome lógico do serviço, como "notas".
+
+    Valor retornado:
+    @return Retorna bytes da chave secreta do serviço.
+
+    Assertiva de entrada:
+    @pre servico != None
+    @pre servico deve estar cadastrado em CHAVES_SERVICOS.
+
+    Assertiva de saída:
+    @post Retorna a chave correspondente ou lança exceção para serviço desconhecido.
+
+    Exceções:
+    @throws ValueError quando o serviço não está registrado.
+
+    Observações:
+    No projeto há apenas o serviço de notas, protegido por chave compartilhada.
+    ***************************************************************************
+    """
     if servico not in CHAVES_SERVICOS:
         raise ValueError("Servico desconhecido.")
 
@@ -30,6 +79,37 @@ def obter_chave_servico(servico: str) -> bytes:
 
 
 def validar_tgt(usuario: str, tgt_criptografado: dict) -> dict:
+    """
+    ***************************************************************************
+    Função: validar_tgt
+
+    @brief Descriptografa e valida um TGT recebido pelo TGS.
+
+    Descrição:
+    Verifica presença do TGT, abre o ticket com a chave secreta do TGS, confirma
+    usuário, chave Cliente-TGS e validade temporal.
+
+    Parâmetros:
+    @param usuario Usuário declarado na requisição ao TGS.
+    @param tgt_criptografado TGT criptografado emitido pelo AS.
+
+    Valor retornado:
+    @return Retorna dict do TGT em claro após validação.
+
+    Assertiva de entrada:
+    @pre usuario != None
+    @pre tgt_criptografado deve ter sido criptografado com CHAVE_SECRETA_TGS.
+
+    Assertiva de saída:
+    @post Retorna TGT válido ou lança ValueError com a causa da rejeição.
+
+    Exceções:
+    @throws ValueError para TGT ausente, inválido, de outro usuário, sem chave ou expirado.
+
+    Observações:
+    Esta validação impede que um cliente use TGT de outro usuário ou ticket expirado.
+    ***************************************************************************
+    """
     if not tgt_criptografado:
         raise ValueError("TGT nao informado.")
 
@@ -52,6 +132,39 @@ def validar_tgt(usuario: str, tgt_criptografado: dict) -> dict:
 
 
 def validar_autenticador(usuario: str, tgt: dict, autenticador_criptografado: dict) -> dict:
+    """
+    ***************************************************************************
+    Função: validar_autenticador
+
+    @brief Valida o autenticador Cliente-TGS.
+
+    Descrição:
+    Abre o autenticador com a chave Cliente-TGS contida no TGT e verifica usuário,
+    presença de timestamp, expiração e timestamp futuro fora da janela permitida.
+
+    Parâmetros:
+    @param usuario Usuário declarado na requisição ao TGS.
+    @param tgt TGT já validado e em claro.
+    @param autenticador_criptografado Autenticador enviado pelo cliente.
+
+    Valor retornado:
+    @return Retorna dict do autenticador em claro.
+
+    Assertiva de entrada:
+    @pre usuario deve ser o mesmo usuário do TGT.
+    @pre tgt deve conter chave_sessao_cliente_tgs.
+    @pre autenticador_criptografado deve estar cifrado com a chave Cliente-TGS.
+
+    Assertiva de saída:
+    @post Retorna autenticador válido ou lança ValueError.
+
+    Exceções:
+    @throws ValueError para autenticador ausente, inválido, expirado ou incompatível.
+
+    Observações:
+    O autenticador prova posse da chave de sessão Cliente-TGS sem expor a chave.
+    ***************************************************************************
+    """
     if not autenticador_criptografado:
         raise ValueError("Autenticador nao informado.")
 
@@ -84,6 +197,40 @@ def emitir_ticket_servico(
         tgt_criptografado: dict,
         autenticador_criptografado: dict
 ) -> dict:
+    """
+    ***************************************************************************
+    Função: emitir_ticket_servico
+
+    @brief Emite ticket de serviço e chave Cliente-Serviço.
+
+    Descrição:
+    Valida o TGT e o autenticador Cliente-TGS, gera uma nova chave de sessão para
+    o serviço solicitado, cria o ticket de serviço e monta a resposta ao cliente.
+
+    Parâmetros:
+    @param usuario Usuário que solicita acesso ao serviço.
+    @param servico Nome do serviço alvo.
+    @param tgt_criptografado TGT emitido pelo AS.
+    @param autenticador_criptografado Autenticador Cliente-TGS.
+
+    Valor retornado:
+    @return Retorna dict com servico, ticket_servico e resposta_cliente.
+
+    Assertiva de entrada:
+    @pre servico deve ser conhecido pelo TGS.
+    @pre tgt_criptografado e autenticador_criptografado devem ser válidos.
+
+    Assertiva de saída:
+    @post Retorna ticket de serviço criptografado para o serviço e resposta criptografada
+    @post para o cliente com a chave Cliente-TGS.
+
+    Exceções:
+    @throws Exception Propaga ValueError de obter_chave_servico, validar_tgt e validar_autenticador.
+
+    Observações:
+    Essa função representa a emissão de credencial de serviço no Kerberos.
+    ***************************************************************************
+    """
     chave_servico = obter_chave_servico(servico)
     tgt = validar_tgt(usuario, tgt_criptografado)
     validar_autenticador(usuario, tgt, autenticador_criptografado)
@@ -120,6 +267,37 @@ def emitir_ticket_servico(
 
 
 def abrir_ticket_servico(servico: str, ticket_servico_criptografado: dict) -> dict:
+    """
+    ***************************************************************************
+    Função: abrir_ticket_servico
+
+    @brief Abre e valida um ticket de serviço.
+
+    Descrição:
+    Obtém a chave secreta do serviço, descriptografa o ticket, confirma que ele
+    foi emitido para o serviço correto e verifica sua expiração.
+
+    Parâmetros:
+    @param servico Nome do serviço que recebeu o ticket.
+    @param ticket_servico_criptografado Ticket emitido pelo TGS.
+
+    Valor retornado:
+    @return Retorna dict do ticket de serviço em claro.
+
+    Assertiva de entrada:
+    @pre servico deve estar cadastrado em CHAVES_SERVICOS.
+    @pre ticket_servico_criptografado deve ter sido cifrado com a chave do serviço.
+
+    Assertiva de saída:
+    @post Retorna ticket válido ou lança ValueError.
+
+    Exceções:
+    @throws ValueError para serviço desconhecido, ticket inválido, outro serviço ou expiração.
+
+    Observações:
+    Usada pelo serviço protegido antes de aceitar qualquer operação do cliente.
+    ***************************************************************************
+    """
     chave_servico = obter_chave_servico(servico)
 
     try:

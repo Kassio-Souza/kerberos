@@ -1,3 +1,20 @@
+"""
+@file servidor_notas.py
+@brief Servidor TCP do Serviço de Notas protegido.
+
+@details
+Recebe requisições JSON para listar ou criar notas e delega a validação Kerberos
+e regras de autorização ao módulo notes.service.
+
+Componentes principais:
+- ManipuladorNotas
+- ServidorNotasTCP
+- iniciar_servidor_notas
+
+Papel na arquitetura:
+Processo do serviço de aplicação protegido por tickets de serviço.
+"""
+
 import socketserver
 
 from kerberos_notas.config import HOST_SERVICO_NOTAS, PORTA_SERVICO_NOTAS
@@ -8,17 +25,59 @@ from kerberos_notas.rede.logs import log_titulo, log_passo, log_ok, log_erro, lo
 
 class ManipuladorNotas(socketserver.BaseRequestHandler):
     """
-    Serviço de Notas protegido por Kerberos.
+    ***************************************************************************
+    Classe: ManipuladorNotas
 
-    Ele recebe:
-    - ticket de serviço;
-    - autenticador Cliente-Serviço;
-    - operação solicitada.
+    @brief Manipula conexões TCP ao Serviço de Notas e direciona cada ação para a.
 
-    Só libera a operação depois de validar o ticket e o autenticador.
+    @details
+    Manipula conexões TCP ao Serviço de Notas e direciona cada ação para a
+    operação protegida correspondente.
+
+    Responsabilidades principais:
+    - Receber mensagens JSON do cliente.
+    - Encaminhar listagem e criação de notas.
+    - Enviar respostas com dados ou erros.
+
+    Relação com o protocolo Kerberos:
+    Representa o endpoint de serviço que valida ticket e autenticador antes de
+    executar a regra de negócio.
+
+    Observações:
+    A autenticação mútua é gerada por notes.service e retornada ao cliente.
+    ***************************************************************************
     """
 
     def handle(self):
+        """
+        ***************************************************************************
+        Função: handle
+
+        @brief Processa uma requisição TCP ao serviço de notas.
+
+        Descrição:
+        Lê a ação solicitada e delega para _listar_notas ou _criar_nota; ações
+        desconhecidas recebem resposta de erro.
+
+        Parâmetros:
+        Não recebe parâmetros explícitos.
+
+        Valor retornado:
+        @return Não retorna valor.
+
+        Assertiva de entrada:
+        @pre A conexão deve fornecer JSON válido.
+
+        Assertiva de saída:
+        @post Envia resposta JSON ao cliente.
+
+        Exceções:
+        @throws Exception Captura exceções gerais e responde com ok falso.
+
+        Observações:
+        O método faz roteamento de ações, não valida credenciais diretamente.
+        ***************************************************************************
+        """
         log_titulo("SERVIÇO NOTAS", "Nova conexão recebida no serviço protegido")
 
         try:
@@ -55,6 +114,35 @@ class ManipuladorNotas(socketserver.BaseRequestHandler):
             log_erro("SERVIÇO NOTAS", str(erro))
 
     def _listar_notas(self, requisicao: dict) -> None:
+        """
+        ***************************************************************************
+        Função: _listar_notas
+
+        @brief Atende a operação protegida de listagem.
+
+        Descrição:
+        Extrai usuário, ticket de serviço e autenticador da requisição, valida
+        campos obrigatórios e chama listar_notas.
+
+        Parâmetros:
+        @param requisicao Dicionário recebido por socket.
+
+        Valor retornado:
+        @return Não retorna valor.
+
+        Assertiva de entrada:
+        @pre requisicao deve conter usuario, ticket_servico e autenticador.
+
+        Assertiva de saída:
+        @post Envia resposta com notas e AP-REP, ou erro.
+
+        Exceções:
+        @throws Exception Pode propagar exceções de listar_notas para o handle, quando ocorrerem.
+
+        Observações:
+        A função mantém a camada TCP separada da regra Kerberos.
+        ***************************************************************************
+        """
         usuario = requisicao.get("usuario")
         ticket_servico = requisicao.get("ticket_servico")
         autenticador = requisicao.get("autenticador")
@@ -117,6 +205,35 @@ class ManipuladorNotas(socketserver.BaseRequestHandler):
         )
 
     def _criar_nota(self, requisicao: dict) -> None:
+        """
+        ***************************************************************************
+        Função: _criar_nota
+
+        @brief Atende a operação protegida de criação de nota.
+
+        Descrição:
+        Extrai dados acadêmicos e credenciais Kerberos, valida presença dos campos
+        e chama criar_nota para autenticar, autorizar e persistir.
+
+        Parâmetros:
+        @param requisicao Dicionário recebido por socket.
+
+        Valor retornado:
+        @return Não retorna valor.
+
+        Assertiva de entrada:
+        @pre requisicao deve conter usuário, aluno, disciplina, valor, ticket e autenticador.
+
+        Assertiva de saída:
+        @post Envia resposta com nota criada e AP-REP, ou erro.
+
+        Exceções:
+        @throws Exception Pode propagar exceções de criar_nota para o handle.
+
+        Observações:
+        A permissão de professor é avaliada no serviço de domínio.
+        ***************************************************************************
+        """
         usuario = requisicao.get("usuario")
         aluno = requisicao.get("aluno")
         disciplina = requisicao.get("disciplina")
@@ -196,10 +313,60 @@ class ManipuladorNotas(socketserver.BaseRequestHandler):
 
 
 class ServidorNotasTCP(socketserver.ThreadingTCPServer):
+    """
+    ***************************************************************************
+    Classe: ServidorNotasTCP
+
+    @brief Servidor TCP multithread do serviço protegido de notas.
+
+    @details
+    Servidor TCP multithread do serviço protegido de notas.
+
+    Responsabilidades principais:
+    - Escutar HOST_SERVICO_NOTAS e PORTA_SERVICO_NOTAS.
+    - Criar ManipuladorNotas por conexão.
+    - Permitir reutilização de endereço.
+
+    Relação com o protocolo Kerberos:
+    Hospeda o serviço final acessado após emissão do ticket de serviço pelo TGS.
+
+    Observações:
+    Herda ThreadingTCPServer e não adiciona lógica além da configuração de endereço.
+    ***************************************************************************
+    """
     allow_reuse_address = True
 
 
 def iniciar_servidor_notas():
+    """
+    ***************************************************************************
+    Função: iniciar_servidor_notas
+
+    @brief Inicializa o servidor TCP do Serviço de Notas.
+
+    Descrição:
+    Instancia ServidorNotasTCP, inicia o atendimento contínuo e fecha o socket ao
+    encerrar.
+
+    Parâmetros:
+    Não recebe parâmetros explícitos.
+
+    Valor retornado:
+    @return Não retorna valor em execução normal.
+
+    Assertiva de entrada:
+    @pre HOST_SERVICO_NOTAS e PORTA_SERVICO_NOTAS devem estar disponíveis.
+
+    Assertiva de saída:
+    @post Servidor é fechado no bloco finally.
+
+    Exceções:
+    @throws Exception Trata KeyboardInterrupt; erros de bind podem propagar.
+
+    Observações:
+    Deve ser executado junto do AS e TGS para o fluxo completo via web.
+    ***************************************************************************
+    """
     servidor = ServidorNotasTCP(
         (HOST_SERVICO_NOTAS, PORTA_SERVICO_NOTAS),
         ManipuladorNotas

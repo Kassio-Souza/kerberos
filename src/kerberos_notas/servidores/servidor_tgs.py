@@ -1,3 +1,20 @@
+"""
+@file servidor_tgs.py
+@brief Servidor TCP do Ticket Granting Server.
+
+@details
+Expõe por socket a emissão de tickets de serviço a partir de TGT e autenticador
+Cliente-TGS.
+
+Componentes principais:
+- ManipuladorTGS
+- ServidorTGSTCP
+- iniciar_servidor_tgs
+
+Papel na arquitetura:
+Processo servidor da segunda etapa do fluxo Kerberos.
+"""
+
 import socketserver
 
 from kerberos_notas.config import HOST_TGS, PORTA_TGS
@@ -8,20 +25,58 @@ from kerberos_notas.rede.logs import log_titulo, log_passo, log_ok, log_erro, lo
 
 class ManipuladorTGS(socketserver.BaseRequestHandler):
     """
-    Ticket Granting Server.
+    ***************************************************************************
+    Classe: ManipuladorTGS
 
-    Ele recebe:
-    - usuário;
-    - TGT emitido pelo AS;
-    - autenticador Cliente-TGS;
-    - nome do serviço desejado.
+    @brief Manipula conexões TCP destinadas ao TGS e delega a emissão do ticket de.
 
-    Se tudo estiver válido, emite:
-    - chave de sessão Cliente-Serviço;
-    - ticket de serviço criptografado para o serviço de notas.
+    @details
+    Manipula conexões TCP destinadas ao TGS e delega a emissão do ticket de
+    serviço para emitir_ticket_servico.
+
+    Responsabilidades principais:
+    - Receber usuário, TGT, serviço e autenticador.
+    - Validar ação solicitada.
+    - Enviar resposta JSON com ticket de serviço ou erro.
+
+    Relação com o protocolo Kerberos:
+    Representa a interface de rede do TGS no fluxo TGS-REQ/TGS-REP.
+
+    Observações:
+    A validação criptográfica fica em kerberos.tgs_server.
+    ***************************************************************************
     """
 
     def handle(self):
+        """
+        ***************************************************************************
+        Função: handle
+
+        @brief Processa requisição TCP de emissão de ticket.
+
+        Descrição:
+        Lê a requisição, exige ação "emitir_ticket" e campos obrigatórios, chama
+        emitir_ticket_servico e envia resposta padronizada.
+
+        Parâmetros:
+        Não recebe parâmetros explícitos.
+
+        Valor retornado:
+        @return Não retorna valor.
+
+        Assertiva de entrada:
+        @pre Requisição deve conter JSON delimitado por newline.
+
+        Assertiva de saída:
+        @post Cliente recebe ok verdadeiro com dados ou ok falso com erro.
+
+        Exceções:
+        @throws Exception Captura exceções gerais e responde com mensagem de erro.
+
+        Observações:
+        Não descriptografa diretamente os tickets; delega à camada de domínio.
+        ***************************************************************************
+        """
         log_titulo("TGS", "Nova conexão recebida no Ticket Granting Server")
 
         try:
@@ -115,10 +170,60 @@ class ManipuladorTGS(socketserver.BaseRequestHandler):
 
 
 class ServidorTGSTCP(socketserver.ThreadingTCPServer):
+    """
+    ***************************************************************************
+    Classe: ServidorTGSTCP
+
+    @brief Servidor TCP multithread que hospeda o TGS.
+
+    @details
+    Servidor TCP multithread que hospeda o TGS.
+
+    Responsabilidades principais:
+    - Escutar HOST_TGS e PORTA_TGS.
+    - Criar ManipuladorTGS por conexão.
+    - Permitir reutilização de endereço.
+
+    Relação com o protocolo Kerberos:
+    Disponibiliza o TGS como processo de rede.
+
+    Observações:
+    Usa ThreadingTCPServer da biblioteca padrão.
+    ***************************************************************************
+    """
     allow_reuse_address = True
 
 
 def iniciar_servidor_tgs():
+    """
+    ***************************************************************************
+    Função: iniciar_servidor_tgs
+
+    @brief Inicializa o servidor TCP do TGS.
+
+    Descrição:
+    Instancia ServidorTGSTCP, inicia loop de atendimento e fecha o servidor ao
+    encerrar.
+
+    Parâmetros:
+    Não recebe parâmetros explícitos.
+
+    Valor retornado:
+    @return Não retorna valor em execução normal.
+
+    Assertiva de entrada:
+    @pre HOST_TGS e PORTA_TGS devem estar disponíveis.
+
+    Assertiva de saída:
+    @post Servidor é fechado ao sair do loop.
+
+    Exceções:
+    @throws Exception Trata KeyboardInterrupt; erros de criação do socket podem propagar.
+
+    Observações:
+    Usado quando o TGS é executado separadamente.
+    ***************************************************************************
+    """
     servidor = ServidorTGSTCP((HOST_TGS, PORTA_TGS), ManipuladorTGS)
 
     print(f"[TGS] Ticket Granting Server escutando em {HOST_TGS}:{PORTA_TGS}")

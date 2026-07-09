@@ -1,3 +1,21 @@
+"""
+@file service.py
+@brief Regras do Serviço de Notas protegido por Kerberos.
+
+@details
+Autentica tickets de serviço e autenticadores Cliente-Serviço, aplica controle
+de acesso por tipo de usuário e executa operações de listagem e criação de notas.
+
+Componentes principais:
+- _autenticar_no_servico
+- listar_notas
+- criar_nota
+
+Papel na arquitetura:
+Representa o serviço protegido que só aceita operações após ticket válido,
+autenticador recente e confirmação de autenticação mútua via AP-REP.
+"""
+
 from kerberos_notas.crypto.crypto_utils import base64_para_bytes, criptografar_json
 from kerberos_notas.kerberos.authenticator import abrir_autenticador
 from kerberos_notas.kerberos.tgs_server import abrir_ticket_servico
@@ -19,6 +37,41 @@ def _autenticar_no_servico(
         ticket_servico_criptografado: dict,
         autenticador_criptografado: dict,
 ) -> dict:
+    """
+    ***************************************************************************
+    Função: _autenticar_no_servico
+
+    @brief Valida ticket de serviço e autenticador Cliente-Serviço.
+
+    Descrição:
+    Abre o ticket emitido pelo TGS, confirma o usuário, descriptografa o
+    autenticador com a chave Cliente-Serviço, verifica timestamp e nonce contra
+    replay e gera AP-REP para autenticação mútua.
+
+    Parâmetros:
+    @param usuario Usuário declarado na operação protegida.
+    @param ticket_servico_criptografado Ticket de serviço recebido do cliente.
+    @param autenticador_criptografado Autenticador Cliente-Serviço.
+
+    Valor retornado:
+    @return Retorna dict AP-REP criptografado com a chave Cliente-Serviço.
+
+    Assertiva de entrada:
+    @pre usuario != None
+    @pre ticket_servico_criptografado deve ter sido emitido para o serviço notas.
+    @pre autenticador_criptografado deve conter usuário, timestamp e nonce válidos.
+
+    Assertiva de saída:
+    @post Retorna AP-REP com timestamp_confirmado e nonce_confirmado quando a validação
+    @post é bem-sucedida.
+
+    Exceções:
+    @throws ValueError para ticket de outro usuário, autenticador ausente,
+
+    Observações:
+    NONCES_USADOS guarda chaves de replay em memória durante a execução do serviço.
+    ***************************************************************************
+    """
     ticket_servico = abrir_ticket_servico(NOME_SERVICO, ticket_servico_criptografado)
 
     if ticket_servico.get("usuario") != usuario:
@@ -79,6 +132,37 @@ def listar_notas(
         ticket_servico_criptografado: dict,
         autenticador_criptografado: dict,
 ) -> dict:
+    """
+    ***************************************************************************
+    Função: listar_notas
+
+    @brief Lista notas após autenticação Kerberos no serviço.
+
+    Descrição:
+    Autentica a requisição, decide se o usuário é professor ou aluno e consulta
+    todas as notas ou apenas as notas do próprio usuário.
+
+    Parâmetros:
+    @param usuario Usuário autenticado que solicita a listagem.
+    @param ticket_servico_criptografado Ticket de serviço emitido pelo TGS.
+    @param autenticador_criptografado Autenticador Cliente-Serviço.
+
+    Valor retornado:
+    @return Retorna dict com lista de notas e AP-REP.
+
+    Assertiva de entrada:
+    @pre Credenciais Kerberos devem ser válidas para o serviço notas.
+
+    Assertiva de saída:
+    @post Professor recebe todas as notas; aluno recebe somente suas notas.
+
+    Exceções:
+    @throws Exception Propaga ValueError de _autenticar_no_servico e erros do repositório.
+
+    Observações:
+    Combina autenticação Kerberos com autorização simples baseada no tipo de usuário.
+    ***************************************************************************
+    """
     ap_rep = _autenticar_no_servico(
         usuario,
         ticket_servico_criptografado,
@@ -104,6 +188,42 @@ def criar_nota(
         ticket_servico_criptografado: dict,
         autenticador_criptografado: dict,
 ) -> dict:
+    """
+    ***************************************************************************
+    Função: criar_nota
+
+    @brief Cria uma nota escolar após autenticação e autorização.
+
+    Descrição:
+    Valida credenciais Kerberos, exige que o usuário seja professor, normaliza os
+    campos de entrada e grava a nota para o aluno informado.
+
+    Parâmetros:
+    @param usuario Usuário autenticado que tenta criar a nota.
+    @param aluno Nome do aluno que receberá a nota.
+    @param disciplina Nome da disciplina.
+    @param valor Valor textual da nota.
+    @param ticket_servico_criptografado Ticket emitido pelo TGS.
+    @param autenticador_criptografado Autenticador Cliente-Serviço.
+
+    Valor retornado:
+    @return Retorna dict com a nota criada e AP-REP.
+
+    Assertiva de entrada:
+    @pre usuario deve ser professor.
+    @pre aluno, disciplina e valor devem conter texto após strip.
+    @pre Credenciais Kerberos devem ser válidas.
+
+    Assertiva de saída:
+    @post Persiste a nota e retorna os dados cadastrados.
+
+    Exceções:
+    @throws ValueError se usuário não for professor ou campos obrigatórios faltarem.
+
+    Observações:
+    A função separa autenticação Kerberos de autorização acadêmica por papel.
+    ***************************************************************************
+    """
     ap_rep = _autenticar_no_servico(
         usuario,
         ticket_servico_criptografado,

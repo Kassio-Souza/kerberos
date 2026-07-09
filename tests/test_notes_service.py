@@ -1,3 +1,24 @@
+"""
+---
+* Arquivo: test_notes_service.py
+* @file test_notes_service.py
+* @brief Testes do Serviço de Notas protegido por Kerberos.
+*
+* Descrição
+* Verifica criação e listagem de notas com ticket de serviço, autenticador,
+* autorização por papel e proteção contra replay.
+*
+* Componentes principais
+* * gerar_ticket_e_autenticador
+* * preparar_ambiente
+* * test_professor_cria_nota_para_aluno
+* * test_servico_rejeita_replay_do_mesmo_autenticador
+*
+* Papel na arquitetura
+* Valida a etapa final do Kerberos Notas, incluindo AP-REQ e AP-REP.
+---
+"""
+
 import json
 
 import pytest
@@ -17,6 +38,34 @@ from kerberos_notas.notes import service
 
 
 def gerar_ticket_e_autenticador(usuario: str):
+    """
+    ---
+    * Função: gerar_ticket_e_autenticador
+    * @brief Cria ticket de serviço e autenticador para testes.
+    *
+    * Descrição
+    * Gera chave Cliente-Serviço, cria ticket para o serviço notas, criptografa com
+    * a chave do serviço e monta autenticador com timestamp e nonce previsíveis.
+    *
+    * Parâmetros
+    * @param usuario Usuário que constará no ticket e no autenticador.
+    *
+    * Valor retornado
+    * @return Retorna ticket, autenticador, chave Base64, timestamp e nonce.
+    *
+    * Assertiva de entrada
+    * usuario deve ser string usada nos testes.
+    *
+    * Assertiva de saída
+    * Retorna credenciais válidas para o serviço notas.
+    *
+    * Exceções
+    * Pode propagar erros de criptografia ou geração de chave.
+    *
+    * Observações
+    * Helper de teste para simular ticket emitido pelo TGS.
+    ---
+    """
     chave_sessao = gerar_chave_simetrica()
     chave_sessao_base64 = bytes_para_base64(chave_sessao)
 
@@ -45,6 +94,35 @@ def gerar_ticket_e_autenticador(usuario: str):
 
 
 def preparar_ambiente(tmp_path, monkeypatch):
+    """
+    ---
+    * Função: preparar_ambiente
+    * @brief Prepara armazenamento e autorização isolados para teste.
+    *
+    * Descrição
+    * Cria arquivo temporário de notas, redireciona CAMINHO_NOTAS, substitui a
+    * função de professor e limpa nonces usados.
+    *
+    * Parâmetros
+    * @param tmp_path Fixture pytest para diretório temporário.
+    * @param monkeypatch Fixture pytest para substituir atributos.
+    *
+    * Valor retornado
+    * @return Retorna Path do arquivo temporário de notas.
+    *
+    * Assertiva de entrada
+    * Fixtures pytest devem estar disponíveis.
+    *
+    * Assertiva de saída
+    * Ambiente fica isolado e NONCES_USADOS vazio.
+    *
+    * Exceções
+    * Pode propagar erros de escrita em tmp_path.
+    *
+    * Observações
+    * Evita interferência com dados reais do projeto.
+    ---
+    """
     caminho = tmp_path / "notas.json"
     caminho.write_text("{}", encoding="utf-8")
 
@@ -57,6 +135,35 @@ def preparar_ambiente(tmp_path, monkeypatch):
 
 
 def test_professor_cria_nota_para_aluno(tmp_path, monkeypatch):
+    """
+    ---
+    * Função: test_professor_cria_nota_para_aluno
+    * @brief Verifica criação de nota por professor autenticado.
+    *
+    * Descrição
+    * Gera credenciais para prof1, chama criar_nota, confirma persistência da nota
+    * no aluno correto e valida o AP-REP retornado.
+    *
+    * Parâmetros
+    * @param tmp_path Fixture pytest para armazenamento temporário.
+    * @param monkeypatch Fixture pytest para isolamento de dependências.
+    *
+    * Valor retornado
+    * @return Não retorna valor.
+    *
+    * Assertiva de entrada
+    * prof1 é tratado como professor no ambiente do teste.
+    *
+    * Assertiva de saída
+    * Nota é criada e AP-REP confirma timestamp e nonce.
+    *
+    * Exceções
+    * AssertionError se criação, persistência ou AP-REP divergirem.
+    *
+    * Observações
+    * Cobre autenticação mútua no caminho de escrita.
+    ---
+    """
     caminho = preparar_ambiente(tmp_path, monkeypatch)
 
     ticket, autenticador, chave_sessao, timestamp, nonce = gerar_ticket_e_autenticador("prof1")
@@ -89,6 +196,35 @@ def test_professor_cria_nota_para_aluno(tmp_path, monkeypatch):
 
 
 def test_aluno_nao_consegue_criar_nota(tmp_path, monkeypatch):
+    """
+    ---
+    * Função: test_aluno_nao_consegue_criar_nota
+    * @brief Verifica bloqueio de criação por aluno.
+    *
+    * Descrição
+    * Autentica aluno1 no serviço e confirma que criar_nota rejeita a operação por
+    * falta de papel professor.
+    *
+    * Parâmetros
+    * @param tmp_path Fixture pytest para arquivo temporário.
+    * @param monkeypatch Fixture pytest para substituir autorização.
+    *
+    * Valor retornado
+    * @return Não retorna valor.
+    *
+    * Assertiva de entrada
+    * aluno1 não é professor no ambiente do teste.
+    *
+    * Assertiva de saída
+    * criar_nota lança ValueError sobre professores.
+    *
+    * Exceções
+    * O teste espera ValueError.
+    *
+    * Observações
+    * Distingue autenticação Kerberos de autorização da aplicação.
+    ---
+    """
     preparar_ambiente(tmp_path, monkeypatch)
 
     ticket, autenticador, _, _, _ = gerar_ticket_e_autenticador("aluno1")
@@ -105,6 +241,35 @@ def test_aluno_nao_consegue_criar_nota(tmp_path, monkeypatch):
 
 
 def test_aluno_lista_apenas_suas_notas(tmp_path, monkeypatch):
+    """
+    ---
+    * Função: test_aluno_lista_apenas_suas_notas
+    * @brief Verifica visão restrita do aluno.
+    *
+    * Descrição
+    * Prepara notas de dois alunos, autentica aluno1 e confirma que apenas suas
+    * notas são retornadas.
+    *
+    * Parâmetros
+    * @param tmp_path Fixture pytest para arquivo temporário.
+    * @param monkeypatch Fixture pytest para isolamento.
+    *
+    * Valor retornado
+    * @return Não retorna valor.
+    *
+    * Assertiva de entrada
+    * O armazenamento contém notas de aluno1 e aluno2.
+    *
+    * Assertiva de saída
+    * Resultado contém somente nota de aluno1.
+    *
+    * Exceções
+    * AssertionError se o serviço expuser notas indevidas.
+    *
+    * Observações
+    * Valida autorização de leitura para alunos.
+    ---
+    """
     caminho = preparar_ambiente(tmp_path, monkeypatch)
 
     caminho.write_text(
@@ -142,6 +307,35 @@ def test_aluno_lista_apenas_suas_notas(tmp_path, monkeypatch):
 
 
 def test_professor_lista_todas_as_notas(tmp_path, monkeypatch):
+    """
+    ---
+    * Função: test_professor_lista_todas_as_notas
+    * @brief Verifica visão completa do professor.
+    *
+    * Descrição
+    * Prepara notas de dois alunos, autentica prof1 e confirma que a listagem inclui
+    * todos os registros.
+    *
+    * Parâmetros
+    * @param tmp_path Fixture pytest para arquivo temporário.
+    * @param monkeypatch Fixture pytest para isolamento.
+    *
+    * Valor retornado
+    * @return Não retorna valor.
+    *
+    * Assertiva de entrada
+    * prof1 é professor e existem notas de dois alunos.
+    *
+    * Assertiva de saída
+    * Retorna notas dos dois alunos.
+    *
+    * Exceções
+    * AssertionError se a listagem completa falhar.
+    *
+    * Observações
+    * Cobre autorização de leitura ampla para professores.
+    ---
+    """
     caminho = preparar_ambiente(tmp_path, monkeypatch)
 
     caminho.write_text(
@@ -178,6 +372,35 @@ def test_professor_lista_todas_as_notas(tmp_path, monkeypatch):
 
 
 def test_servico_rejeita_replay_do_mesmo_autenticador(tmp_path, monkeypatch):
+    """
+    ---
+    * Função: test_servico_rejeita_replay_do_mesmo_autenticador
+    * @brief Verifica rejeição de replay do autenticador.
+    *
+    * Descrição
+    * Usa o mesmo autenticador duas vezes; a primeira chamada é aceita e a segunda
+    * deve ser rejeitada pelo controle de nonces usados.
+    *
+    * Parâmetros
+    * @param tmp_path Fixture pytest para arquivo temporário.
+    * @param monkeypatch Fixture pytest para isolamento.
+    *
+    * Valor retornado
+    * @return Não retorna valor.
+    *
+    * Assertiva de entrada
+    * O mesmo ticket e autenticador são reutilizados.
+    *
+    * Assertiva de saída
+    * A segunda chamada lança ValueError com indicação de replay.
+    *
+    * Exceções
+    * O teste espera ValueError na segunda chamada.
+    *
+    * Observações
+    * Cobre proteção básica contra repetição no serviço.
+    ---
+    """
     preparar_ambiente(tmp_path, monkeypatch)
 
     ticket, autenticador, _, _, _ = gerar_ticket_e_autenticador("prof1")

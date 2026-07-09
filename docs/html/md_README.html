@@ -1,0 +1,676 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Kerberos Notas: Portal de Notas com Autenticação Kerberos</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Kerberos Notas
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Gerado por Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Busca');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_README.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Carregando...</div>
+<div class="SRStatus" id="Searching">Procurando...</div>
+<div class="SRStatus" id="NoMatches">Nenhuma entrada encontrado</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Portal de Notas com Autenticação Kerberos</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="anchor" id="autotoc_md0"></a> Este projeto implementa uma versão didática do protocolo de autenticação Kerberos utilizando Python. O sistema simula um Portal de Notas protegido por autenticação baseada em tickets, chaves de sessão e criptografia simétrica.</p>
+<p>O projeto foi desenvolvido para a disciplina de Segurança Computacional, com foco principal na implementação prática do fluxo Kerberos envolvendo:</p>
+<ul>
+<li>Cliente;</li>
+<li>Servidor de Autenticação, AS;</li>
+<li>Ticket Granting Server, TGS;</li>
+<li>Serviço protegido de Notas.</li>
+</ul>
+<p>A aplicação permite que professores lancem notas para alunos e que alunos consultem apenas suas próprias notas. O acesso ao serviço de notas é protegido pelo fluxo Kerberos.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md2"></a>
+Objetivo do projeto</h1>
+<p>O objetivo principal é demonstrar, na prática, o funcionamento do protocolo Kerberos.</p>
+<p>O sistema implementa:</p>
+<ul>
+<li>autenticação de usuário por senha;</li>
+<li>derivação de chave a partir da senha com KDF;</li>
+<li>emissão de Ticket Granting Ticket, TGT;</li>
+<li>emissão de ticket de serviço;</li>
+<li>autenticação por ticket;</li>
+<li>autenticação mútua entre cliente e serviço;</li>
+<li>comunicação entre componentes usando sockets TCP;</li>
+<li>serviço protegido de Portal de Notas.</li>
+</ul>
+<hr  />
+<h1><a class="anchor" id="autotoc_md4"></a>
+Arquitetura geral</h1>
+<p>A arquitetura foi separada em quatro partes principais:</p>
+<div class="fragment"><div class="line">Cliente Web Flask</div>
+<div class="line">        |</div>
+<div class="line">        | socket TCP</div>
+<div class="line">        v</div>
+<div class="line">Servidor de Autenticação - AS</div>
+<div class="line">        |</div>
+<div class="line">        | socket TCP</div>
+<div class="line">        v</div>
+<div class="line">Ticket Granting Server - TGS</div>
+<div class="line">        |</div>
+<div class="line">        | socket TCP</div>
+<div class="line">        v</div>
+<div class="line">Serviço de Notas protegido</div>
+</div><!-- fragment --><p>Na prática, o Cliente Flask se comunica com cada servidor por meio de sockets TCP e mensagens JSON.</p>
+<p>Cada servidor roda em uma porta própria:</p>
+<div class="fragment"><div class="line">AS                 127.0.0.1:9001</div>
+<div class="line">TGS                127.0.0.1:9002</div>
+<div class="line">Serviço de Notas   127.0.0.1:9003</div>
+<div class="line">Cliente Flask      127.0.0.1:5000</div>
+</div><!-- fragment --><hr  />
+<h1><a class="anchor" id="autotoc_md6"></a>
+Funcionamento resumido do Kerberos</h1>
+<p>O fluxo implementado segue estas etapas:</p>
+<ol type="1">
+<li>O usuário informa login e senha no Cliente Web.</li>
+<li>O cliente envia a autenticação inicial para o AS.</li>
+<li>O AS valida a senha usando uma chave derivada por KDF.</li>
+<li>O AS emite uma chave de sessão Cliente-TGS e um TGT.</li>
+<li>O cliente envia o TGT e um autenticador para o TGS.</li>
+<li>O TGS valida o TGT e o autenticador.</li>
+<li>O TGS emite uma chave de sessão Cliente-Serviço e um ticket para o Serviço de Notas.</li>
+<li>O cliente envia o ticket de serviço e um novo autenticador ao Serviço de Notas.</li>
+<li>O Serviço de Notas valida o ticket e o autenticador.</li>
+<li>O Serviço de Notas responde com AP-REP para autenticação mútua.</li>
+<li>O cliente valida o AP-REP e confirma que o serviço é legítimo.</li>
+<li>A operação protegida é liberada.</li>
+</ol>
+<hr  />
+<h1><a class="anchor" id="autotoc_md8"></a>
+Serviço protegido implementado</h1>
+<p>O serviço protegido escolhido foi um Portal de Notas.</p>
+<p>Existem dois tipos de usuário:</p>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Professor</h2>
+<p>O professor pode:</p>
+<ul>
+<li>acessar o sistema após autenticação Kerberos;</li>
+<li>selecionar um aluno cadastrado;</li>
+<li>lançar uma ou várias notas;</li>
+<li>escolher disciplinas cadastradas em uma lista;</li>
+<li>adicionar disciplina personalizada;</li>
+<li>visualizar as notas agrupadas por aluno.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md10"></a>
+Aluno</h2>
+<p>O aluno pode:</p>
+<ul>
+<li>acessar o sistema após autenticação Kerberos;</li>
+<li>visualizar apenas suas próprias notas.</li>
+</ul>
+<hr  />
+<h1><a class="anchor" id="autotoc_md12"></a>
+Tecnologias utilizadas</h1>
+<p>O projeto utiliza:</p>
+<ul>
+<li>Python 3;</li>
+<li>Flask;</li>
+<li>sockets TCP;</li>
+<li>JSON para troca de mensagens;</li>
+<li>biblioteca <code>cryptography</code>;</li>
+<li>Pytest para testes.</li>
+</ul>
+<hr  />
+<h1><a class="anchor" id="autotoc_md14"></a>
+Algoritmos e mecanismos utilizados</h1>
+<h2><a class="anchor" id="autotoc_md15"></a>
+Criptografia simétrica</h2>
+<p>O projeto utiliza exclusivamente criptografia de chave simétrica, conforme exigido no trabalho.</p>
+<p>São usadas chaves diferentes para funções diferentes:</p>
+<ul>
+<li>chave derivada da senha do usuário;</li>
+<li>chave secreta do TGS;</li>
+<li>chave secreta do Serviço de Notas;</li>
+<li>chave de sessão Cliente-TGS;</li>
+<li>chave de sessão Cliente-Serviço.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md16"></a>
+KDF</h2>
+<p>A senha do usuário não é usada diretamente como chave.</p>
+<p>Primeiro, ela é processada por uma Função de Derivação de Chave, KDF. O projeto utiliza:</p>
+<div class="fragment"><div class="line">PBKDF2-HMAC-SHA256</div>
+</div><!-- fragment --><p>A KDF usa:</p>
+<ul>
+<li>senha do usuário;</li>
+<li>salt individual;</li>
+<li>número de iterações;</li>
+<li>tamanho da chave desejada.</li>
+</ul>
+<p>Isso torna mais difícil um ataque direto contra senhas fracas.</p>
+<h2><a class="anchor" id="autotoc_md17"></a>
+Tickets</h2>
+<p>O projeto usa dois tipos principais de tickets:</p>
+<div class="fragment"><div class="line">TGT - Ticket Granting Ticket</div>
+<div class="line">Ticket de Serviço</div>
+</div><!-- fragment --><p>O TGT é emitido pelo AS e criptografado com a chave secreta do TGS.</p>
+<p>O ticket de serviço é emitido pelo TGS e criptografado com a chave secreta do Serviço de Notas.</p>
+<p>O cliente transporta os tickets, mas não consegue abrir nem alterar o conteúdo deles.</p>
+<h2><a class="anchor" id="autotoc_md18"></a>
+Autenticadores</h2>
+<p>Os autenticadores são mensagens criptografadas com chaves de sessão.</p>
+<p>Eles contêm:</p>
+<ul>
+<li>usuário;</li>
+<li>timestamp;</li>
+<li>nonce.</li>
+</ul>
+<p>O autenticador prova que o cliente conhece a chave de sessão associada ao ticket.</p>
+<h2><a class="anchor" id="autotoc_md19"></a>
+Autenticação mútua</h2>
+<p>A autenticação mútua é feita por meio de uma resposta AP-REP.</p>
+<p>Depois que o Serviço de Notas valida o ticket e o autenticador, ele responde ao cliente com uma mensagem criptografada usando a chave Cliente-Serviço.</p>
+<p>Essa resposta contém:</p>
+<ul>
+<li>timestamp confirmado;</li>
+<li>nonce confirmado.</li>
+</ul>
+<p>O cliente abre essa resposta e confirma que o serviço realmente conhece a chave de sessão. Assim, o cliente também autentica o serviço.</p>
+<h2><a class="anchor" id="autotoc_md20"></a>
+Proteção contra replay</h2>
+<p>O projeto usa timestamp e nonce para reduzir ataques de repetição.</p>
+<p>O Serviço de Notas mantém em memória os nonces já utilizados durante a execução. Se o mesmo autenticador for enviado novamente, ele é rejeitado.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md22"></a>
+Estrutura do projeto</h1>
+<div class="fragment"><div class="line">.</div>
+<div class="line">├── data/</div>
+<div class="line">│   ├── usuarios.json</div>
+<div class="line">│   └── notas.json</div>
+<div class="line">│</div>
+<div class="line">├── docs/</div>
+<div class="line">│   ├── fluxo_kerberos.md</div>
+<div class="line">│   └── fontes_algoritmos.md</div>
+<div class="line">│</div>
+<div class="line">├── scripts/</div>
+<div class="line">│   ├── criar_usuario.py</div>
+<div class="line">│   └── iniciar_servidores.py</div>
+<div class="line">│</div>
+<div class="line">├── src/</div>
+<div class="line">│   └── kerberos_notas/</div>
+<div class="line">│       ├── client/</div>
+<div class="line">│       │   ├── routes.py</div>
+<div class="line">│       │   └── cliente_socket.py</div>
+<div class="line">│       │</div>
+<div class="line">│       ├── crypto/</div>
+<div class="line">│       │   ├── crypto_utils.py</div>
+<div class="line">│       │   └── kdf.py</div>
+<div class="line">│       │</div>
+<div class="line">│       ├── kerberos/</div>
+<div class="line">│       │   ├── as_server.py</div>
+<div class="line">│       │   ├── tgs_server.py</div>
+<div class="line">│       │   ├── tickets.py</div>
+<div class="line">│       │   └── authenticator.py</div>
+<div class="line">│       │</div>
+<div class="line">│       ├── notes/</div>
+<div class="line">│       │   ├── service.py</div>
+<div class="line">│       │   └── repository.py</div>
+<div class="line">│       │</div>
+<div class="line">│       ├── rede/</div>
+<div class="line">│       │   ├── protocolo.py</div>
+<div class="line">│       │   └── logs.py</div>
+<div class="line">│       │</div>
+<div class="line">│       ├── servidores/</div>
+<div class="line">│       │   ├── servidor_as.py</div>
+<div class="line">│       │   ├── servidor_tgs.py</div>
+<div class="line">│       │   └── servidor_notas.py</div>
+<div class="line">│       │</div>
+<div class="line">│       ├── storage/</div>
+<div class="line">│       │   └── json_store.py</div>
+<div class="line">│       │</div>
+<div class="line">│       ├── usuarios.py</div>
+<div class="line">│       └── config.py</div>
+<div class="line">│</div>
+<div class="line">├── static/</div>
+<div class="line">│   └── style.css</div>
+<div class="line">│</div>
+<div class="line">├── templates/</div>
+<div class="line">│   ├── layout.html</div>
+<div class="line">│   ├── login.html</div>
+<div class="line">│   ├── notas.html</div>
+<div class="line">│   └── erro.html</div>
+<div class="line">│</div>
+<div class="line">├── tests/</div>
+<div class="line">├── requirements.txt</div>
+<div class="line">├── run.py</div>
+<div class="line">└── README.md</div>
+</div><!-- fragment --><hr  />
+<h1><a class="anchor" id="autotoc_md24"></a>
+Como executar no Linux ou WSL</h1>
+<h2><a class="anchor" id="autotoc_md25"></a>
+1. Entrar na pasta do projeto</h2>
+<div class="fragment"><div class="line">cd kerberos</div>
+</div><!-- fragment --><p>Caso sua pasta tenha outro nome, entre na pasta correta do projeto.</p>
+<hr  />
+<h2><a class="anchor" id="autotoc_md27"></a>
+2. Criar ambiente virtual</h2>
+<div class="fragment"><div class="line">python3 -m venv .venv</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md29"></a>
+3. Ativar ambiente virtual</h2>
+<div class="fragment"><div class="line">source .venv/bin/activate</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md31"></a>
+4. Instalar dependências</h2>
+<div class="fragment"><div class="line">python3 -m pip install -r requirements.txt</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md33"></a>
+5. Configurar o PYTHONPATH</h2>
+<div class="fragment"><div class="line">export PYTHONPATH=src</div>
+</div><!-- fragment --><p>Esse comando precisa ser executado no terminal onde o projeto será rodado.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md35"></a>
+Como executar no Windows PowerShell</h1>
+<h2><a class="anchor" id="autotoc_md36"></a>
+1. Entrar na pasta do projeto</h2>
+<div class="fragment"><div class="line">cd kerberos</div>
+</div><!-- fragment --><p>Caso sua pasta tenha outro nome, entre na pasta correta do projeto.</p>
+<hr  />
+<h2><a class="anchor" id="autotoc_md38"></a>
+2. Criar ambiente virtual</h2>
+<div class="fragment"><div class="line">py -m venv .venv</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md40"></a>
+3. Ativar ambiente virtual</h2>
+<div class="fragment"><div class="line">.\.venv\Scripts\Activate.ps1</div>
+</div><!-- fragment --><p>Se o PowerShell bloquear a ativação da venv, execute:</p>
+<div class="fragment"><div class="line">Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</div>
+</div><!-- fragment --><p>Depois tente ativar novamente:</p>
+<div class="fragment"><div class="line">.\.venv\Scripts\Activate.ps1</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md42"></a>
+4. Instalar dependências</h2>
+<div class="fragment"><div class="line">py -m pip install -r requirements.txt</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md44"></a>
+5. Configurar o PYTHONPATH</h2>
+<div class="fragment"><div class="line">$env:PYTHONPATH=&#39;src&#39;</div>
+</div><!-- fragment --><hr  />
+<h1><a class="anchor" id="autotoc_md46"></a>
+Cadastro de usuários</h1>
+<p>Antes de usar o sistema, é necessário criar usuários.</p>
+<p>Execute:</p>
+<h2><a class="anchor" id="autotoc_md47"></a>
+Linux ou WSL</h2>
+<div class="fragment"><div class="line">python3 scripts/criar_usuario.py</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md48"></a>
+Windows PowerShell</h2>
+<div class="fragment"><div class="line">py scripts/criar_usuario.py</div>
+</div><!-- fragment --><p>O sistema solicitará:</p>
+<div class="fragment"><div class="line">Usuário:</div>
+<div class="line">Senha:</div>
+<div class="line"> </div>
+<div class="line">Tipo de usuário:</div>
+<div class="line">1 - Aluno</div>
+<div class="line">2 - Professor</div>
+<div class="line">Escolha o tipo:</div>
+</div><!-- fragment --><p>Crie pelo menos um professor e um aluno.</p>
+<p>Exemplo de professor:</p>
+<div class="fragment"><div class="line">Usuário: professor</div>
+<div class="line">Senha: 123456</div>
+<div class="line">Tipo: 2</div>
+</div><!-- fragment --><p>Exemplo de aluno:</p>
+<div class="fragment"><div class="line">Usuário: aluno1</div>
+<div class="line">Senha: 123456</div>
+<div class="line">Tipo: 1</div>
+</div><!-- fragment --><p>Os usuários são salvos no arquivo:</p>
+<div class="fragment"><div class="line">data/usuarios.json</div>
+</div><!-- fragment --><p>A senha original não é salva. O sistema salva apenas o salt, o verificador da chave derivada e o tipo do usuário.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md50"></a>
+Executando o projeto</h1>
+<p>A execução completa usa dois terminais.</p>
+<hr  />
+<h2><a class="anchor" id="autotoc_md52"></a>
+Terminal 1 — iniciar AS, TGS e Serviço de Notas</h2>
+<p>No Linux ou WSL:</p>
+<div class="fragment"><div class="line">export PYTHONPATH=src</div>
+<div class="line">python3 scripts/iniciar_servidores.py</div>
+</div><!-- fragment --><p>No Windows PowerShell:</p>
+<div class="fragment"><div class="line">$env:PYTHONPATH=&#39;src&#39;</div>
+<div class="line">py scripts/iniciar_servidores.py</div>
+</div><!-- fragment --><p>Resultado esperado:</p>
+<div class="fragment"><div class="line">Iniciando servidores Kerberos via sockets...</div>
+<div class="line"> </div>
+<div class="line">[AS] Servidor de Autenticação escutando em 127.0.0.1:9001</div>
+<div class="line">[TGS] Ticket Granting Server escutando em 127.0.0.1:9002</div>
+<div class="line">[NOTAS] Serviço de Notas escutando em 127.0.0.1:9003</div>
+<div class="line"> </div>
+<div class="line">Servidores iniciados:</div>
+<div class="line">AS     -&gt; 127.0.0.1:9001</div>
+<div class="line">TGS    -&gt; 127.0.0.1:9002</div>
+<div class="line">NOTAS  -&gt; 127.0.0.1:9003</div>
+</div><!-- fragment --><p>Esse terminal deve permanecer aberto.</p>
+<hr  />
+<h2><a class="anchor" id="autotoc_md54"></a>
+Terminal 2 — iniciar o Cliente Web Flask</h2>
+<p>No Linux ou WSL:</p>
+<div class="fragment"><div class="line">export PYTHONPATH=src</div>
+<div class="line">python3 run.py</div>
+</div><!-- fragment --><p>No Windows PowerShell:</p>
+<div class="fragment"><div class="line">$env:PYTHONPATH=&#39;src&#39;</div>
+<div class="line">py run.py</div>
+</div><!-- fragment --><p>Depois acesse no navegador:</p>
+<div class="fragment"><div class="line">http://127.0.0.1:5000</div>
+</div><!-- fragment --><hr  />
+<h1><a class="anchor" id="autotoc_md56"></a>
+Fluxo recomendado para teste</h1>
+<p>Para testar o sistema completo:</p>
+<ol type="1">
+<li>Inicie os servidores Kerberos.</li>
+<li>Inicie o Flask.</li>
+<li>Acesse <code><a href="http://127.0.0.1:5000">http://127.0.0.1:5000</a></code>.</li>
+<li>Faça login com um usuário do tipo professor.</li>
+<li>Selecione um aluno na lista.</li>
+<li>Selecione uma disciplina.</li>
+<li>Informe a nota.</li>
+<li>Se quiser, clique em adicionar outra disciplina.</li>
+<li>Salve as notas.</li>
+<li>Faça logout.</li>
+<li>Faça login com o usuário aluno.</li>
+<li>Confira se o aluno visualiza apenas suas próprias notas.</li>
+</ol>
+<hr  />
+<h1><a class="anchor" id="autotoc_md58"></a>
+Logs no terminal</h1>
+<p>O projeto possui logs organizados no terminal para facilitar a demonstração.</p>
+<p>Os logs mostram o funcionamento das quatro partes:</p>
+<div class="fragment"><div class="line">CLIENTE WEB</div>
+<div class="line">AS</div>
+<div class="line">TGS</div>
+<div class="line">SERVIÇO NOTAS</div>
+</div><!-- fragment --><p>Durante o login, é possível acompanhar:</p>
+<div class="fragment"><div class="line">[CLIENTE WEB] Iniciando fluxo Kerberos completo</div>
+<div class="line">[CLIENTE WEB] Chamando o AS via socket</div>
+<div class="line">[AS] Validando usuário e senha</div>
+<div class="line">[AS] Chave Cliente-TGS gerada</div>
+<div class="line">[AS] TGT criado e criptografado</div>
+<div class="line">[CLIENTE WEB] Abrindo resposta do AS</div>
+<div class="line">[CLIENTE WEB] Criando autenticador para o TGS</div>
+<div class="line">[CLIENTE WEB] Chamando o TGS via socket</div>
+<div class="line">[TGS] Abrindo o TGT</div>
+<div class="line">[TGS] Validando autenticador Cliente-TGS</div>
+<div class="line">[TGS] Emitindo ticket para o serviço de notas</div>
+<div class="line">[CLIENTE WEB] Obtendo chave Cliente-Serviço</div>
+</div><!-- fragment --><p>Durante o acesso às notas, é possível acompanhar:</p>
+<div class="fragment"><div class="line">[CLIENTE WEB] Chamando o Serviço de Notas via socket</div>
+<div class="line">[SERVIÇO NOTAS] Validando ticket de serviço</div>
+<div class="line">[SERVIÇO NOTAS] Validando autenticador Cliente-Serviço</div>
+<div class="line">[SERVIÇO NOTAS] Executando operação protegida</div>
+<div class="line">[SERVIÇO NOTAS] AP-REP gerado para autenticação mútua</div>
+<div class="line">[CLIENTE WEB] Validando autenticação mútua</div>
+<div class="line">[CLIENTE WEB] Autenticação mútua confirmada</div>
+</div><!-- fragment --><p>Esses logs foram colocados para facilitar a apresentação e demonstrar claramente que AS, TGS e Serviço de Notas estão sendo chamados separadamente.</p>
+<p>Por segurança, os logs não exibem senhas nem chaves completas. Valores sensíveis são mascarados.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md60"></a>
+Executando testes</h1>
+<p>Com o ambiente virtual ativado, execute:</p>
+<h2><a class="anchor" id="autotoc_md61"></a>
+Linux ou WSL</h2>
+<div class="fragment"><div class="line">export PYTHONPATH=src</div>
+<div class="line">python3 -m pytest -q</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md62"></a>
+Windows PowerShell</h2>
+<div class="fragment"><div class="line">$env:PYTHONPATH=&#39;src&#39;</div>
+<div class="line">py -m pytest -q</div>
+</div><!-- fragment --><p>Resultado esperado:</p>
+<div class="fragment"><div class="line">passed</div>
+</div><!-- fragment --><p>A quantidade exata de testes pode variar conforme a versão do projeto.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md64"></a>
+Principais arquivos do projeto</h1>
+<h2><a class="anchor" id="autotoc_md65"></a>
+&lt;tt&gt;src/kerberos_notas/kerberos/as_server.py&lt;/tt&gt;</h2>
+<p>Contém a lógica principal do Servidor de Autenticação, AS.</p>
+<p>Responsabilidades:</p>
+<ul>
+<li>validar usuário e senha;</li>
+<li>usar KDF para derivar a chave da senha;</li>
+<li>gerar chave de sessão Cliente-TGS;</li>
+<li>emitir o TGT.</li>
+</ul>
+<hr  />
+<h2><a class="anchor" id="autotoc_md67"></a>
+&lt;tt&gt;src/kerberos_notas/kerberos/tgs_server.py&lt;/tt&gt;</h2>
+<p>Contém a lógica principal do Ticket Granting Server, TGS.</p>
+<p>Responsabilidades:</p>
+<ul>
+<li>abrir e validar o TGT;</li>
+<li>validar o autenticador Cliente-TGS;</li>
+<li>gerar chave Cliente-Serviço;</li>
+<li>emitir ticket de serviço.</li>
+</ul>
+<hr  />
+<h2><a class="anchor" id="autotoc_md69"></a>
+&lt;tt&gt;src/kerberos_notas/notes/service.py&lt;/tt&gt;</h2>
+<p>Contém a lógica do Serviço de Notas protegido.</p>
+<p>Responsabilidades:</p>
+<ul>
+<li>validar ticket de serviço;</li>
+<li>validar autenticador Cliente-Serviço;</li>
+<li>bloquear replay simples por nonce;</li>
+<li>aplicar regra de permissão de professor;</li>
+<li>listar notas;</li>
+<li>criar notas;</li>
+<li>gerar AP-REP para autenticação mútua.</li>
+</ul>
+<hr  />
+<h2><a class="anchor" id="autotoc_md71"></a>
+&lt;tt&gt;src/kerberos_notas/rede/protocolo.py&lt;/tt&gt;</h2>
+<p>Contém a camada básica de comunicação via socket.</p>
+<p>Responsabilidades:</p>
+<ul>
+<li>enviar JSON por socket;</li>
+<li>receber JSON por socket;</li>
+<li>abrir conexão com servidor TCP.</li>
+</ul>
+<hr  />
+<h2><a class="anchor" id="autotoc_md73"></a>
+&lt;tt&gt;src/kerberos_notas/servidores/servidor_as.py&lt;/tt&gt;</h2>
+<p>Servidor TCP do AS.</p>
+<p>Escuta na porta:</p>
+<div class="fragment"><div class="line">127.0.0.1:9001</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md75"></a>
+&lt;tt&gt;src/kerberos_notas/servidores/servidor_tgs.py&lt;/tt&gt;</h2>
+<p>Servidor TCP do TGS.</p>
+<p>Escuta na porta:</p>
+<div class="fragment"><div class="line">127.0.0.1:9002</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md77"></a>
+&lt;tt&gt;src/kerberos_notas/servidores/servidor_notas.py&lt;/tt&gt;</h2>
+<p>Servidor TCP do Serviço de Notas.</p>
+<p>Escuta na porta:</p>
+<div class="fragment"><div class="line">127.0.0.1:9003</div>
+</div><!-- fragment --><hr  />
+<h2><a class="anchor" id="autotoc_md79"></a>
+&lt;tt&gt;src/kerberos_notas/client/routes.py&lt;/tt&gt;</h2>
+<p>Contém as rotas Flask.</p>
+<p>Responsabilidades:</p>
+<ul>
+<li>login;</li>
+<li>execução do fluxo Kerberos pelo cliente;</li>
+<li>acesso à página de notas;</li>
+<li>chamada dos servidores via sockets;</li>
+<li>validação do AP-REP.</li>
+</ul>
+<hr  />
+<h2><a class="anchor" id="autotoc_md81"></a>
+&lt;tt&gt;src/kerberos_notas/client/cliente_socket.py&lt;/tt&gt;</h2>
+<p>Contém as funções usadas pelo Cliente Web para chamar os servidores TCP.</p>
+<p>Responsabilidades:</p>
+<ul>
+<li>chamar o AS;</li>
+<li>chamar o TGS;</li>
+<li>chamar o Serviço de Notas.</li>
+</ul>
+<hr  />
+<h2><a class="anchor" id="autotoc_md83"></a>
+&lt;tt&gt;scripts/criar_usuario.py&lt;/tt&gt;</h2>
+<p>Script usado para cadastrar usuários.</p>
+<p>Permite criar:</p>
+<ul>
+<li>aluno;</li>
+<li>professor.</li>
+</ul>
+<hr  />
+<h2><a class="anchor" id="autotoc_md85"></a>
+&lt;tt&gt;scripts/iniciar_servidores.py&lt;/tt&gt;</h2>
+<p>Script usado para iniciar simultaneamente:</p>
+<ul>
+<li>AS;</li>
+<li>TGS;</li>
+<li>Serviço de Notas.</li>
+</ul>
+<hr  />
+<h1><a class="anchor" id="autotoc_md87"></a>
+Observações importantes de segurança</h1>
+<p>Este projeto foi desenvolvido para fins acadêmicos.</p>
+<p>Algumas decisões foram simplificadas para facilitar a implementação e a explicação:</p>
+<ul>
+<li>as chaves secretas do TGS e do Serviço de Notas ficam no arquivo de configuração;</li>
+<li>os dados são salvos em arquivos JSON;</li>
+<li>os servidores rodam localmente em <code>127.0.0.1</code>;</li>
+<li>o controle de nonces usados fica em memória;</li>
+<li>não há banco de dados real;</li>
+<li>não há HTTPS, pois o foco do trabalho é o Kerberos.</li>
+</ul>
+<p>Em um ambiente real, seria necessário:</p>
+<ul>
+<li>proteger melhor as chaves secretas;</li>
+<li>usar banco de dados;</li>
+<li>proteger os arquivos de configuração;</li>
+<li>usar TLS na comunicação de rede;</li>
+<li>implementar controle persistente de replay;</li>
+<li>adicionar logs de auditoria com rotação;</li>
+<li>melhorar validações e permissões.</li>
+</ul>
+<hr  />
+<h1><a class="anchor" id="autotoc_md89"></a>
+Limitações conhecidas</h1>
+<p>A implementação é acadêmica e simplificada.</p>
+<p>As principais limitações são:</p>
+<ul>
+<li>as chaves secretas ficam fixas no arquivo de configuração;</li>
+<li>os usuários e notas são salvos em JSON;</li>
+<li>a proteção contra replay usa memória local;</li>
+<li>os servidores rodam localmente;</li>
+<li>não há interface administrativa completa;</li>
+<li>não há edição ou exclusão de notas;</li>
+<li>não há banco de dados relacional.</li>
+</ul>
+<p>Essas limitações não impedem a demonstração do Kerberos, pois o foco principal do trabalho é o protocolo de autenticação, e não a complexidade do Portal de Notas.</p>
+<hr  />
+<h1><a class="anchor" id="autotoc_md91"></a>
+Resumo final</h1>
+<p>Este projeto demonstra o funcionamento do Kerberos em um Portal de Notas.</p>
+<p>A implementação contempla:</p>
+<ul>
+<li>AS;</li>
+<li>TGS;</li>
+<li>Serviço protegido;</li>
+<li>autenticação por senha;</li>
+<li>KDF;</li>
+<li>tickets;</li>
+<li>chaves de sessão;</li>
+<li>autenticação mútua;</li>
+<li>proteção simples contra replay;</li>
+<li>comunicação por sockets;</li>
+<li>execução simultânea dos servidores;</li>
+<li>logs didáticos para apresentação.</li>
+</ul>
+<p>O serviço de notas é simples, mas suficiente para demonstrar o uso do protocolo Kerberos protegendo uma aplicação real. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Gerado por <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

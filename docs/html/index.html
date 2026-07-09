@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Kerberos Notas: Kerberos Notas</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Kerberos Notas
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Gerado por Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Busca');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('index.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Carregando...</div>
+<div class="SRStatus" id="Searching">Procurando...</div>
+<div class="SRStatus" id="NoMatches">Nenhuma entrada encontrado</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Kerberos Notas </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md111"></a>
+Visao geral</h1>
+<p>Kerberos Notas e uma implementacao academica em Python de um fluxo Kerberos simplificado aplicado a um sistema de notas. O projeto separa os papeis de Cliente, Servidor de Autenticacao (AS), Ticket Granting Server (TGS) e Servico de Notas protegido, demonstrando como tickets, autenticadores e chaves de sessao podem ser usados para controlar o acesso a uma aplicacao.</p>
+<p>A documentacao gerada pelo Doxygen descreve os modulos Python, as funcoes, as classes de servidores TCP, as rotas do cliente web e os utilitarios criptograficos que sustentam o fluxo.</p>
+<h1><a class="anchor" id="autotoc_md112"></a>
+Execução rápida</h1>
+<p>Para preparar o ambiente, iniciar os servidores, acessar a aplicação web, rodar os testes e gerar a documentação, consulte: <a class="el" href="como_executar.html">Como executar o código</a>.</p>
+<h1><a class="anchor" id="autotoc_md113"></a>
+Objetivo academico</h1>
+<p>O objetivo do projeto e apresentar, em codigo executavel, os principais conceitos do protocolo Kerberos em um contexto didatico:</p>
+<ul>
+<li>autenticacao inicial do usuario sem armazenar senha em texto puro;</li>
+<li>derivacao de chave de longo prazo a partir de senha e salt;</li>
+<li>emissao de Ticket Granting Ticket (TGT) pelo AS;</li>
+<li>emissao de ticket de servico pelo TGS;</li>
+<li>uso de autenticadores com timestamp e nonce;</li>
+<li>protecao de mensagens com criptografia simetrica;</li>
+<li>autenticacao mutua entre cliente e servico protegido;</li>
+<li>autorizacao de acesso ao sistema de notas por papel de usuario.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md114"></a>
+Arquitetura</h1>
+<p>O sistema e dividido em quatro componentes principais.</p>
+<h2><a class="anchor" id="autotoc_md115"></a>
+Cliente</h2>
+<p>O cliente web esta em <code>src/kerberos_notas/client</code>. Ele recebe usuario e senha, executa o fluxo Kerberos por sockets, armazena em sessao o ticket de servico e a chave Cliente-Servico, e chama o Servico de Notas para listar ou criar notas.</p>
+<p>Arquivos principais:</p>
+<ul>
+<li><code><a class="el" href="routes_8py.html">client/routes.py</a></code>: rotas Flask, fluxo Kerberos do cliente e validacao AP-REP;</li>
+<li><code><a class="el" href="cliente__socket_8py.html">client/cliente_socket.py</a></code>: chamadas socket para AS, TGS e Servico de Notas.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md116"></a>
+Servidor de Autenticacao (AS)</h2>
+<p>O AS valida a senha do usuario por meio de KDF e verificador salvo. Quando a senha e valida, ele gera a chave de sessao Cliente-TGS e cria um TGT criptografado com a chave secreta do TGS.</p>
+<p>Arquivos principais:</p>
+<ul>
+<li><code><a class="el" href="as__server_8py.html">kerberos/as_server.py</a></code>: logica de autenticacao inicial;</li>
+<li><code><a class="el" href="servidor__as_8py.html">servidores/servidor_as.py</a></code>: servidor TCP que expõe o AS.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md117"></a>
+Ticket Granting Server (TGS)</h2>
+<p>O TGS abre e valida o TGT, valida o autenticador Cliente-TGS e emite um ticket para o servico solicitado. A resposta ao cliente contem a chave Cliente-Servico protegida pela chave Cliente-TGS.</p>
+<p>Arquivos principais:</p>
+<ul>
+<li><code><a class="el" href="tgs__server_8py.html">kerberos/tgs_server.py</a></code>: validacao de TGT, autenticador e ticket de servico;</li>
+<li><code><a class="el" href="servidor__tgs_8py.html">servidores/servidor_tgs.py</a></code>: servidor TCP do TGS.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md118"></a>
+Servico de Notas</h2>
+<p>O Servico de Notas abre o ticket de servico, valida o autenticador Cliente-Servico, rejeita replay por nonce e aplica a regra de autorizacao: professores podem criar e listar todas as notas; alunos listam apenas suas proprias notas.</p>
+<p>Arquivos principais:</p>
+<ul>
+<li><code><a class="el" href="service_8py.html">notes/service.py</a></code>: autenticacao no servico, AP-REP e regras de acesso;</li>
+<li><code><a class="el" href="repository_8py.html">notes/repository.py</a></code>: persistencia das notas em JSON;</li>
+<li><code><a class="el" href="servidor__notas_8py.html">servidores/servidor_notas.py</a></code>: servidor TCP do servico protegido.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md119"></a>
+Fluxo Kerberos</h1>
+<ol type="1">
+<li>O usuario informa login e senha no cliente web.</li>
+<li>O cliente envia usuario e senha ao AS.</li>
+<li>O AS carrega o salt do usuario, deriva a chave da senha e compara o verificador salvo.</li>
+<li>O AS gera a chave Cliente-TGS e cria um TGT.</li>
+<li>A resposta do AS e criptografada com a chave derivada da senha do cliente.</li>
+<li>O cliente abre a resposta do AS, obtem a chave Cliente-TGS e transporta o TGT.</li>
+<li>O cliente cria um autenticador Cliente-TGS e solicita ao TGS acesso ao servico <code>notas</code>.</li>
+<li>O TGS abre o TGT, valida o autenticador e gera a chave Cliente-Servico.</li>
+<li>O TGS cria o ticket de servico criptografado para o Servico de Notas.</li>
+<li>O cliente cria um autenticador Cliente-Servico e chama o Servico de Notas.</li>
+<li>O servico abre o ticket, valida o autenticador, verifica replay e executa a operacao autorizada.</li>
+<li>O servico retorna AP-REP para que o cliente confirme a autenticacao mutua.</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md120"></a>
+Arquivos principais</h1>
+<ul>
+<li><code><a class="el" href="config_8py.html">src/kerberos_notas/config.py</a></code>: chaves compartilhadas e portas dos servidores;</li>
+<li><code><a class="el" href="kdf_8py.html">src/kerberos_notas/crypto/kdf.py</a></code>: salt, PBKDF2-HMAC-SHA256 e verificador;</li>
+<li><code><a class="el" href="crypto__utils_8py.html">src/kerberos_notas/crypto/crypto_utils.py</a></code>: AES-GCM e conversoes Base64;</li>
+<li><code><a class="el" href="tickets_8py.html">src/kerberos_notas/kerberos/tickets.py</a></code>: TGT, tickets de servico e validade;</li>
+<li><code><a class="el" href="authenticator_8py.html">src/kerberos_notas/kerberos/authenticator.py</a></code>: autenticadores criptografados;</li>
+<li><code><a class="el" href="as__server_8py.html">src/kerberos_notas/kerberos/as_server.py</a></code>: logica do AS;</li>
+<li><code><a class="el" href="tgs__server_8py.html">src/kerberos_notas/kerberos/tgs_server.py</a></code>: logica do TGS;</li>
+<li><code><a class="el" href="service_8py.html">src/kerberos_notas/notes/service.py</a></code>: servico protegido e autenticacao mutua;</li>
+<li><code><a class="el" href="routes_8py.html">src/kerberos_notas/client/routes.py</a></code>: aplicacao web cliente;</li>
+<li><code><a class="el" href="protocolo_8py.html">src/kerberos_notas/rede/protocolo.py</a></code>: mensagens JSON sobre sockets.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md121"></a>
+Criptografia utilizada</h1>
+<p>O projeto utiliza criptografia simetrica e derivacao de chave para representar os conceitos centrais do Kerberos:</p>
+<ul>
+<li>PBKDF2-HMAC-SHA256 em <code><a class="el" href="kdf_8py.html">crypto/kdf.py</a></code> para derivar a chave do cliente a partir da senha e do salt;</li>
+<li>SHA-256 para gerar o verificador salvo no cadastro;</li>
+<li>AES-GCM em <code><a class="el" href="crypto__utils_8py.html">crypto/crypto_utils.py</a></code> para confidencialidade e autenticidade de tickets, autenticadores e respostas;</li>
+<li>Base64 para transportar chaves, nonces e ciphertexts em estruturas JSON;</li>
+<li>nonces e timestamps para limitar reutilizacao de autenticadores e reduzir risco de replay.</li>
+</ul>
+<p>As chaves secretas do TGS e do Servico de Notas ficam centralizadas em <code><a class="el" href="config_8py.html">config.py</a></code>, como simplificacao academica para demonstracao local.</p>
+<h1><a class="anchor" id="autotoc_md122"></a>
+Como navegar na documentacao</h1>
+<p>Use o menu lateral da documentacao HTML para navegar:</p>
+<ul>
+<li><b>Inicio</b>: esta pagina, com a visao geral do projeto;</li>
+<li><b>Paginas do Projeto</b>: paginas Markdown adicionais, incluindo o README;</li>
+<li><b>Modulos Python</b>: namespaces e modulos gerados a partir do pacote <code><a class="el" href="namespacekerberos__notas.html">kerberos_notas</a></code>;</li>
+<li><b>Classes</b>: classes dos servidores TCP e seus metodos;</li>
+<li><b>Codigo-Fonte</b>: arquivos Python documentados e suas referencias.</li>
+</ul>
+<p>Para entender o fluxo completo, uma boa ordem de leitura e:</p>
+<ol type="1">
+<li><code><a class="el" href="kdf_8py.html">crypto/kdf.py</a></code> e <code><a class="el" href="crypto__utils_8py.html">crypto/crypto_utils.py</a></code>;</li>
+<li><code><a class="el" href="tickets_8py.html">kerberos/tickets.py</a></code> e <code><a class="el" href="authenticator_8py.html">kerberos/authenticator.py</a></code>;</li>
+<li><code><a class="el" href="as__server_8py.html">kerberos/as_server.py</a></code>;</li>
+<li><code><a class="el" href="tgs__server_8py.html">kerberos/tgs_server.py</a></code>;</li>
+<li><code><a class="el" href="service_8py.html">notes/service.py</a></code>;</li>
+<li><code><a class="el" href="routes_8py.html">client/routes.py</a></code>.</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md123"></a>
+Execucao da documentacao</h1>
+<p>A documentacao e gerada com:</p>
+<div class="fragment"><div class="line">doxygen Doxyfile</div>
+</div><!-- fragment --><p>O HTML gerado fica em <code>docs/html</code>. </p>
+</div></div><!-- PageDoc -->
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Gerado por <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>
