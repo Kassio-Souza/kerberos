@@ -1,0 +1,264 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+}
+
+.topo {
+    background: #1f2937;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+}
+
+.card {
+    background: white;
+    padding: 24px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+h2, h3, h4 {
+    margin-top: 0;
+}
+
+.descricao {
+    color: #555;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input, textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+button, .botao-secundario {
+    display: inline-block;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover, .botao-secundario:hover {
+    background: #1d4ed8;
+}
+
+.botao-secundario {
+    background: #4b5563;
+}
+
+.botao-secundario:hover {
+    background: #374151;
+}
+
+.alerta {
+    background: #fff3cd;
+    color: #664d03;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.erro {
+    border-left: 5px solid #dc2626;
+}
+
+.linha-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lista-notas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.nota {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fafafa;
+}
+
+.form-notas {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.campo-formulario label {
+    font-weight: 600;
+}
+
+.campo-formulario input,
+.campo-formulario select {
+    padding: 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.linha-separadora {
+    height: 1px;
+    background: #e5e5e5;
+    margin: 8px 0;
+}
+
+.linha-nota {
+    display: grid;
+    grid-template-columns: 1fr 160px auto;
+    gap: 12px;
+    align-items: end;
+    padding: 14px;
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: #fafafa;
+}
+
+.campo-nota {
+    min-width: 120px;
+}
+
+.input-outra-disciplina {
+    margin-top: 8px;
+}
+
+.acoes-formulario {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.botao-remover {
+    background: #f4f4f4;
+    color: #8a1f1f;
+    border: 1px solid #e0b4b4;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.botao-remover:hover {
+    background: #ffecec;
+}
+
+.tabela-responsiva {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabela-notas {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.tabela-notas th,
+.tabela-notas td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: left;
+}
+
+.tabela-notas th {
+    background: #f5f5f5;
+    font-weight: 700;
+}
+
+.aviso {
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff8df;
+    border: 1px solid #f0d98c;
+}
+
+@media (max-width: 700px) {
+    .linha-nota {
+        grid-template-columns: 1fr;
+    }
+
+    .acoes-formulario {
+        flex-direction: column;
+    }
+
+    .acoes-formulario button,
+    .botao-remover {
+        width: 100%;
+    }
+}
+
+.lista-alunos-notas {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 16px;
+}
+
+.card-aluno {
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.cabecalho-aluno {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f7f7f7;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+.cabecalho-aluno h4 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.cabecalho-aluno p {
+    margin: 4px 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.card-aluno .tabela-notas {
+    margin-top: 0;
+}

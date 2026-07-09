@@ -1,0 +1,47 @@
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build / pacotes
+build/
+dist/
+*.egg-info/
+
+# Configurações locais
+.env
+.env.*
+*.local
+
+# Banco/arquivos locais
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos zip gerados
+*.zip
+
+# Cache do Flask
+instance/
+.webassets-cache

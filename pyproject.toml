@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kerberos-notas"
+version = "0.1.0"
+description = "Implementação acadêmica simplificada do protocolo Kerberos para proteção de um sistema de notas"
+requires-python = ">=3.10"
+dependencies = [
+    "cryptography"
+    "Flask"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

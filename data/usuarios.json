@@ -1,0 +1,19 @@
+{
+    "usuarios": {
+        "prof": {
+            "salt": "RDuYzvaK2iiTVnOvFPmZ4Q==",
+            "verificador": "kAnsOVZscPNuMcvlujN2EHAS2TRsa/N3Sf+H12haFOo=",
+            "tipo": "professor"
+        },
+        "aluno1": {
+            "salt": "4NUAxBn8Lhrm+/7s6vjFDg==",
+            "verificador": "BmtqobOLO0G08+1NUPqYrVGxu7H2k7N1+4nyt1UdkqQ=",
+            "tipo": "aluno"
+        },
+        "aluno2": {
+            "salt": "AbFMevwqutwTQ+OW3FA9/g==",
+            "verificador": "V8m0M4a1xpdWGQDYL7ItmXC94zAPEQjYrsBgUYeETac=",
+            "tipo": "aluno"
+        }
+    }
+}

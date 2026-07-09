@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block conteudo %}
+
+<section class="card erro">
+    <h2>Erro</h2>
+
+    <p>{{ mensagem }}</p>
+
+    <a href="{{ url_for('login') }}" class="botao-secundario">
+        Voltar para o login
+    </a>
+</section>
+
+{% endblock %}

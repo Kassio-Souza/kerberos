@@ -1,0 +1,242 @@
+{% extends "layout.html" %}
+
+{% block conteudo %}
+
+<section class="card">
+    <div class="linha-topo">
+        <div>
+            <h2>
+                {% if tipo_usuario == 'professor' %}
+                    Painel do Professor
+                {% else %}
+                    Meu Boletim
+                {% endif %}
+            </h2>
+
+            <p class="descricao">
+                Usuário autenticado por Kerberos:
+                <strong>{{ usuario }}</strong>
+                |
+                Perfil:
+                <strong>{{ tipo_usuario }}</strong>
+            </p>
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="botao-secundario">Sair</a>
+    </div>
+</section>
+
+{% if tipo_usuario == 'professor' %}
+<section class="card">
+    <h3>Lançar notas para aluno</h3>
+
+    {% if alunos %}
+        <form method="POST" action="{{ url_for('notas') }}" class="form-notas">
+            <div class="campo-formulario">
+                <label for="aluno">Aluno</label>
+
+                <select id="aluno" name="aluno" required>
+                    <option value="">Selecione um aluno</option>
+
+                    {% for aluno in alunos %}
+                        <option value="{{ aluno }}">{{ aluno }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="linha-separadora"></div>
+
+            <h4>Disciplinas e notas</h4>
+
+            <p class="descricao">
+                Você pode lançar uma ou várias notas para o mesmo aluno.
+            </p>
+
+            <div id="area-notas">
+                <div class="linha-nota">
+                    <div class="campo-formulario">
+                        <label>Disciplina</label>
+
+                        <select name="disciplina[]" class="select-disciplina" required onchange="verificarOutraDisciplina(this)">
+                            <option value="">Selecione a disciplina</option>
+
+                            {% for disciplina in disciplinas %}
+                                <option value="{{ disciplina }}">{{ disciplina }}</option>
+                            {% endfor %}
+
+                            <option value="__outra__">Outra disciplina</option>
+                        </select>
+
+                        <input
+                            type="text"
+                            name="disciplina_extra[]"
+                            class="input-outra-disciplina"
+                            placeholder="Digite o nome da disciplina"
+                            style="display: none;"
+                        >
+                    </div>
+
+                    <div class="campo-formulario campo-nota">
+                        <label>Nota</label>
+
+                        <input
+                            type="text"
+                            name="valor[]"
+                            placeholder="Ex.: 9.5"
+                            required
+                        >
+                    </div>
+
+                    <button
+                        type="button"
+                        class="botao-remover"
+                        onclick="removerLinhaNota(this)"
+                        title="Remover esta disciplina"
+                    >
+                        Remover
+                    </button>
+                </div>
+            </div>
+
+            <div class="acoes-formulario">
+                <button type="button" class="botao-secundario" onclick="adicionarLinhaNota()">
+                    + Adicionar outra disciplina
+                </button>
+
+                <button type="submit">
+                    Salvar nota(s)
+                </button>
+            </div>
+        </form>
+    {% else %}
+        <p class="aviso">
+            Nenhum aluno cadastrado ainda. Crie usuários do tipo aluno usando o script
+            <strong>scripts/criar_usuario.py</strong>.
+        </p>
+    {% endif %}
+</section>
+{% endif %}
+
+<section class="card">
+    <h3>
+        {% if tipo_usuario == 'professor' %}
+            Notas cadastradas por aluno
+        {% else %}
+            Minhas notas
+        {% endif %}
+    </h3>
+
+    {% if notas %}
+        {% if tipo_usuario == 'professor' %}
+            <div class="lista-alunos-notas">
+                {% for aluno, notas_aluno in notas_por_aluno.items() %}
+                    <article class="card-aluno">
+                        <div class="cabecalho-aluno">
+                            <div>
+                                <h4>Aluno: {{ aluno }}</h4>
+                                <p>{{ notas_aluno|length }} nota(s) cadastrada(s)</p>
+                            </div>
+                        </div>
+
+                        <div class="tabela-responsiva">
+                            <table class="tabela-notas">
+                                <thead>
+                                    <tr>
+                                        <th>Disciplina</th>
+                                        <th>Nota</th>
+                                        <th>Professor</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for nota in notas_aluno %}
+                                        <tr>
+                                            <td>{{ nota.disciplina }}</td>
+                                            <td><strong>{{ nota.valor }}</strong></td>
+                                            <td>{{ nota.professor }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="tabela-responsiva">
+                <table class="tabela-notas">
+                    <thead>
+                        <tr>
+                            <th>Disciplina</th>
+                            <th>Nota</th>
+                            <th>Professor</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for nota in notas %}
+                            <tr>
+                                <td>{{ nota.disciplina }}</td>
+                                <td><strong>{{ nota.valor }}</strong></td>
+                                <td>{{ nota.professor }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    {% else %}
+        <p>Nenhuma nota cadastrada ainda.</p>
+    {% endif %}
+</section>
+
+<script>
+    function verificarOutraDisciplina(select) {
+        const linha = select.closest(".linha-nota");
+        const inputOutra = linha.querySelector(".input-outra-disciplina");
+
+        if (select.value === "__outra__") {
+            inputOutra.style.display = "block";
+            inputOutra.required = true;
+        } else {
+            inputOutra.style.display = "none";
+            inputOutra.required = false;
+            inputOutra.value = "";
+        }
+    }
+
+    function adicionarLinhaNota() {
+        const areaNotas = document.getElementById("area-notas");
+        const primeiraLinha = areaNotas.querySelector(".linha-nota");
+        const novaLinha = primeiraLinha.cloneNode(true);
+
+        novaLinha.querySelectorAll("input").forEach(function(input) {
+            input.value = "";
+
+            if (input.classList.contains("input-outra-disciplina")) {
+                input.style.display = "none";
+                input.required = false;
+            }
+        });
+
+        novaLinha.querySelectorAll("select").forEach(function(select) {
+            select.selectedIndex = 0;
+        });
+
+        areaNotas.appendChild(novaLinha);
+    }
+
+    function removerLinhaNota(botao) {
+        const areaNotas = document.getElementById("area-notas");
+        const linhas = areaNotas.querySelectorAll(".linha-nota");
+
+        if (linhas.length === 1) {
+            alert("Mantenha pelo menos uma disciplina para lançar nota.");
+            return;
+        }
+
+        botao.closest(".linha-nota").remove();
+    }
+</script>
+
+{% endblock %}

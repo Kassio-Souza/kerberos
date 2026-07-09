@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: kerberos-notas
+Version: 0.1.0
+Summary: Implementação acadêmica simplificada do protocolo Kerberos para proteção de um sistema de notas
+Requires-Python: >=3.10
+Requires-Dist: cryptography
