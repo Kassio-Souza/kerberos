@@ -1,36 +1,37 @@
 # Portal de Notas com Autenticação Kerberos
 
-Este projeto implementa uma versão didática do protocolo de autenticação Kerberos utilizando Python. O sistema simula um Portal de Notas protegido por autenticação baseada em tickets, chaves de sessão e criptografia simétrica.
+Este projeto implementa uma versão didática do protocolo de autenticação Kerberos utilizando Python. O sistema simula um **Portal de Notas** protegido por autenticação baseada em tickets, chaves de sessão e criptografia simétrica.
 
-O projeto foi desenvolvido para a disciplina de Segurança Computacional, com foco principal na implementação prática do fluxo Kerberos envolvendo:
+O projeto foi desenvolvido para a disciplina de **Segurança Computacional**, com foco principal na implementação prática do fluxo Kerberos envolvendo:
 
-* Cliente;
-* Servidor de Autenticação, AS;
-* Ticket Granting Server, TGS;
-* Serviço protegido de Notas.
+- Cliente Web Flask;
+- Servidor de Autenticação, ou **AS**;
+- Ticket Granting Server, ou **TGS**;
+- Serviço protegido de Notas.
 
 A aplicação permite que professores lancem notas para alunos e que alunos consultem apenas suas próprias notas. O acesso ao serviço de notas é protegido pelo fluxo Kerberos.
 
 ---
 
-# Objetivo do projeto
+## Objetivo do projeto
 
 O objetivo principal é demonstrar, na prática, o funcionamento do protocolo Kerberos.
 
 O sistema implementa:
 
-* autenticação de usuário por senha;
-* derivação de chave a partir da senha com KDF;
-* emissão de Ticket Granting Ticket, TGT;
-* emissão de ticket de serviço;
-* autenticação por ticket;
-* autenticação mútua entre cliente e serviço;
-* comunicação entre componentes usando sockets TCP;
-* serviço protegido de Portal de Notas.
+- autenticação de usuário por senha;
+- derivação de chave a partir da senha com KDF;
+- emissão de Ticket Granting Ticket, ou **TGT**;
+- emissão de ticket de serviço;
+- autenticação por ticket;
+- autenticação mútua entre cliente e serviço;
+- comunicação entre componentes usando sockets TCP;
+- serviço protegido de Portal de Notas;
+- documentação técnica gerada com **Doxygen**.
 
 ---
 
-# Arquitetura geral
+## Arquitetura geral
 
 A arquitetura foi separada em quatro partes principais:
 
@@ -63,7 +64,7 @@ Cliente Flask      127.0.0.1:5000
 
 ---
 
-# Funcionamento resumido do Kerberos
+## Funcionamento resumido do Kerberos
 
 O fluxo implementado segue estas etapas:
 
@@ -82,60 +83,60 @@ O fluxo implementado segue estas etapas:
 
 ---
 
-# Serviço protegido implementado
+## Serviço protegido implementado
 
 O serviço protegido escolhido foi um Portal de Notas.
 
-Existem dois tipos de usuário:
-
-## Professor
+### Professor
 
 O professor pode:
 
-* acessar o sistema após autenticação Kerberos;
-* selecionar um aluno cadastrado;
-* lançar uma ou várias notas;
-* escolher disciplinas cadastradas em uma lista;
-* adicionar disciplina personalizada;
-* visualizar as notas agrupadas por aluno.
+- acessar o sistema após autenticação Kerberos;
+- selecionar um aluno cadastrado;
+- lançar uma ou várias notas;
+- escolher disciplinas cadastradas em uma lista;
+- adicionar disciplina personalizada;
+- visualizar as notas agrupadas por aluno.
 
-## Aluno
+### Aluno
 
 O aluno pode:
 
-* acessar o sistema após autenticação Kerberos;
-* visualizar apenas suas próprias notas.
+- acessar o sistema após autenticação Kerberos;
+- visualizar apenas suas próprias notas.
 
 ---
 
-# Tecnologias utilizadas
+## Tecnologias utilizadas
 
 O projeto utiliza:
 
-* Python 3;
-* Flask;
-* sockets TCP;
-* JSON para troca de mensagens;
-* biblioteca `cryptography`;
-* Pytest para testes.
+- Python 3.10 ou superior;
+- Flask;
+- sockets TCP;
+- JSON para troca de mensagens;
+- biblioteca `cryptography`;
+- Pytest para testes;
+- Doxygen para documentação técnica;
+- Graphviz para diagramas gerados pelo Doxygen.
 
 ---
 
-# Algoritmos e mecanismos utilizados
+## Algoritmos e mecanismos utilizados
 
-## Criptografia simétrica
+### Criptografia simétrica
 
 O projeto utiliza exclusivamente criptografia de chave simétrica, conforme exigido no trabalho.
 
 São usadas chaves diferentes para funções diferentes:
 
-* chave derivada da senha do usuário;
-* chave secreta do TGS;
-* chave secreta do Serviço de Notas;
-* chave de sessão Cliente-TGS;
-* chave de sessão Cliente-Serviço.
+- chave derivada da senha do usuário;
+- chave secreta do TGS;
+- chave secreta do Serviço de Notas;
+- chave de sessão Cliente-TGS;
+- chave de sessão Cliente-Serviço.
 
-## KDF
+### KDF
 
 A senha do usuário não é usada diretamente como chave.
 
@@ -147,14 +148,14 @@ PBKDF2-HMAC-SHA256
 
 A KDF usa:
 
-* senha do usuário;
-* salt individual;
-* número de iterações;
-* tamanho da chave desejada.
+- senha do usuário;
+- salt individual;
+- número de iterações;
+- tamanho da chave desejada.
 
 Isso torna mais difícil um ataque direto contra senhas fracas.
 
-## Tickets
+### Tickets
 
 O projeto usa dois tipos principais de tickets:
 
@@ -169,19 +170,19 @@ O ticket de serviço é emitido pelo TGS e criptografado com a chave secreta do 
 
 O cliente transporta os tickets, mas não consegue abrir nem alterar o conteúdo deles.
 
-## Autenticadores
+### Autenticadores
 
 Os autenticadores são mensagens criptografadas com chaves de sessão.
 
 Eles contêm:
 
-* usuário;
-* timestamp;
-* nonce.
+- usuário;
+- timestamp;
+- nonce.
 
 O autenticador prova que o cliente conhece a chave de sessão associada ao ticket.
 
-## Autenticação mútua
+### Autenticação mútua
 
 A autenticação mútua é feita por meio de uma resposta AP-REP.
 
@@ -189,12 +190,12 @@ Depois que o Serviço de Notas valida o ticket e o autenticador, ele responde ao
 
 Essa resposta contém:
 
-* timestamp confirmado;
-* nonce confirmado.
+- timestamp confirmado;
+- nonce confirmado.
 
 O cliente abre essa resposta e confirma que o serviço realmente conhece a chave de sessão. Assim, o cliente também autentica o serviço.
 
-## Proteção contra replay
+### Proteção contra replay
 
 O projeto usa timestamp e nonce para reduzir ataques de repetição.
 
@@ -202,17 +203,28 @@ O Serviço de Notas mantém em memória os nonces já utilizados durante a execu
 
 ---
 
-# Estrutura do projeto
+## Estrutura do projeto
 
 ```text
 .
 ├── data/
+│   ├── README.md
 │   ├── usuarios.json
 │   └── notas.json
 │
 ├── docs/
+│   ├── divisao_tarefas.md
 │   ├── fluxo_kerberos.md
-│   └── fontes_algoritmos.md
+│   ├── fontes_algoritmos.md
+│   └── html/
+│       └── index.html
+│
+├── doxygen_pages/
+│   ├── mainpage.md
+│   └── execucao.md
+│
+├── doxygen_theme/
+│   └── custom.css
 │
 ├── scripts/
 │   ├── criar_usuario.py
@@ -221,48 +233,22 @@ O Serviço de Notas mantém em memória os nonces já utilizados durante a execu
 ├── src/
 │   └── kerberos_notas/
 │       ├── client/
-│       │   ├── routes.py
-│       │   └── cliente_socket.py
-│       │
 │       ├── crypto/
-│       │   ├── crypto_utils.py
-│       │   └── kdf.py
-│       │
 │       ├── kerberos/
-│       │   ├── as_server.py
-│       │   ├── tgs_server.py
-│       │   ├── tickets.py
-│       │   └── authenticator.py
-│       │
 │       ├── notes/
-│       │   ├── service.py
-│       │   └── repository.py
-│       │
 │       ├── rede/
-│       │   ├── protocolo.py
-│       │   └── logs.py
-│       │
 │       ├── servidores/
-│       │   ├── servidor_as.py
-│       │   ├── servidor_tgs.py
-│       │   └── servidor_notas.py
-│       │
 │       ├── storage/
-│       │   └── json_store.py
-│       │
 │       ├── usuarios.py
 │       └── config.py
 │
 ├── static/
-│   └── style.css
-│
 ├── templates/
-│   ├── layout.html
-│   ├── login.html
-│   ├── notas.html
-│   └── erro.html
-│
 ├── tests/
+├── Doxyfile
+├── layout.xml
+├── abrir_documentacao.py
+├── pyproject.toml
 ├── requirements.txt
 ├── run.py
 └── README.md
@@ -270,9 +256,43 @@ O Serviço de Notas mantém em memória os nonces já utilizados durante a execu
 
 ---
 
-# Como executar no Linux ou WSL
+## Usuários de teste
 
-## 1. Entrar na pasta do projeto
+O projeto já possui usuários de teste cadastrados em `data/usuarios.json`.
+
+Use estes usuários para demonstrar o sistema:
+
+### Professor
+
+```text
+Usuário: prof
+Senha: 123
+Perfil: professor
+```
+
+### Aluno 1
+
+```text
+Usuário: aluno1
+Senha: 123
+Perfil: aluno
+```
+
+### Aluno 2
+
+```text
+Usuário: aluno2
+Senha: 123
+Perfil: aluno
+```
+
+Essas senhas são apenas para demonstração acadêmica. Em um ambiente real, as senhas deveriam ser fortes, individuais e protegidas por políticas de segurança adequadas.
+
+---
+
+## Como executar no Linux ou WSL
+
+### 1. Entrar na pasta do projeto
 
 ```bash
 cd kerberos
@@ -280,33 +300,25 @@ cd kerberos
 
 Caso sua pasta tenha outro nome, entre na pasta correta do projeto.
 
----
-
-## 2. Criar ambiente virtual
+### 2. Criar ambiente virtual
 
 ```bash
 python3 -m venv .venv
 ```
 
----
-
-## 3. Ativar ambiente virtual
+### 3. Ativar ambiente virtual
 
 ```bash
 source .venv/bin/activate
 ```
 
----
-
-## 4. Instalar dependências
+### 4. Instalar dependências
 
 ```bash
 python3 -m pip install -r requirements.txt
 ```
 
----
-
-## 5. Configurar o PYTHONPATH
+### 5. Configurar o PYTHONPATH
 
 ```bash
 export PYTHONPATH=src
@@ -316,9 +328,9 @@ Esse comando precisa ser executado no terminal onde o projeto será rodado.
 
 ---
 
-# Como executar no Windows PowerShell
+## Como executar no Windows PowerShell
 
-## 1. Entrar na pasta do projeto
+### 1. Entrar na pasta do projeto
 
 ```powershell
 cd kerberos
@@ -326,17 +338,13 @@ cd kerberos
 
 Caso sua pasta tenha outro nome, entre na pasta correta do projeto.
 
----
-
-## 2. Criar ambiente virtual
+### 2. Criar ambiente virtual
 
 ```powershell
 py -m venv .venv
 ```
 
----
-
-## 3. Ativar ambiente virtual
+### 3. Ativar ambiente virtual
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -354,17 +362,13 @@ Depois tente ativar novamente:
 .\.venv\Scripts\Activate.ps1
 ```
 
----
-
-## 4. Instalar dependências
+### 4. Instalar dependências
 
 ```powershell
 py -m pip install -r requirements.txt
 ```
 
----
-
-## 5. Configurar o PYTHONPATH
+### 5. Configurar o PYTHONPATH
 
 ```powershell
 $env:PYTHONPATH='src'
@@ -372,71 +376,13 @@ $env:PYTHONPATH='src'
 
 ---
 
-# Cadastro de usuários
-
-Antes de usar o sistema, é necessário criar usuários.
-
-Execute:
-
-## Linux ou WSL
-
-```bash
-python3 scripts/criar_usuario.py
-```
-
-## Windows PowerShell
-
-```powershell
-py scripts/criar_usuario.py
-```
-
-O sistema solicitará:
-
-```text
-Usuário:
-Senha:
-
-Tipo de usuário:
-1 - Aluno
-2 - Professor
-Escolha o tipo:
-```
-
-Crie pelo menos um professor e um aluno.
-
-Exemplo de professor:
-
-```text
-Usuário: professor
-Senha: 123456
-Tipo: 2
-```
-
-Exemplo de aluno:
-
-```text
-Usuário: aluno1
-Senha: 123456
-Tipo: 1
-```
-
-Os usuários são salvos no arquivo:
-
-```text
-data/usuarios.json
-```
-
-A senha original não é salva. O sistema salva apenas o salt, o verificador da chave derivada e o tipo do usuário.
-
----
-
-# Executando o projeto
+## Executando o projeto
 
 A execução completa usa dois terminais.
 
 ---
 
-## Terminal 1 — iniciar AS, TGS e Serviço de Notas
+### Terminal 1 — iniciar AS, TGS e Serviço de Notas
 
 No Linux ou WSL:
 
@@ -471,7 +417,7 @@ Esse terminal deve permanecer aberto.
 
 ---
 
-## Terminal 2 — iniciar o Cliente Web Flask
+### Terminal 2 — iniciar o Cliente Web Flask
 
 No Linux ou WSL:
 
@@ -487,34 +433,216 @@ $env:PYTHONPATH='src'
 py run.py
 ```
 
-Depois acesse no navegador:
+O arquivo `run.py` inicia a aplicação Flask em:
 
 ```text
 http://127.0.0.1:5000
 ```
 
+Além disso, ele abre automaticamente no navegador:
+
+1. primeiro a aplicação web;
+2. depois a documentação Doxygen.
+
+Essa abertura automática foi adicionada para facilitar a apresentação do projeto.
+
 ---
 
-# Fluxo recomendado para teste
+## Fluxo recomendado para teste
 
 Para testar o sistema completo:
 
-1. Inicie os servidores Kerberos.
-2. Inicie o Flask.
+1. Inicie os servidores Kerberos no Terminal 1.
+2. Inicie o Flask no Terminal 2.
 3. Acesse `http://127.0.0.1:5000`.
-4. Faça login com um usuário do tipo professor.
+4. Faça login com o professor:
+   - usuário: `prof`;
+   - senha: `123`.
 5. Selecione um aluno na lista.
 6. Selecione uma disciplina.
 7. Informe a nota.
 8. Se quiser, clique em adicionar outra disciplina.
 9. Salve as notas.
 10. Faça logout.
-11. Faça login com o usuário aluno.
+11. Faça login com um aluno:
+    - usuário: `aluno1`;
+    - senha: `123`.
 12. Confira se o aluno visualiza apenas suas próprias notas.
 
 ---
 
-# Logs no terminal
+## Cadastro de novos usuários
+
+O projeto já possui usuários de teste, mas também permite cadastrar novos usuários.
+
+Execute:
+
+### Linux ou WSL
+
+```bash
+python3 scripts/criar_usuario.py
+```
+
+### Windows PowerShell
+
+```powershell
+py scripts/criar_usuario.py
+```
+
+O sistema solicitará:
+
+```text
+Usuário:
+Senha:
+
+Tipo de usuário:
+1 - Aluno
+2 - Professor
+Escolha o tipo:
+```
+
+Os usuários são salvos no arquivo:
+
+```text
+data/usuarios.json
+```
+
+A senha original não é salva. O sistema salva apenas o salt, o verificador da chave derivada e o tipo do usuário.
+
+---
+
+## Documentação com Doxygen
+
+O projeto possui documentação técnica gerada com **Doxygen**.
+
+A documentação inclui:
+
+- página inicial personalizada;
+- página “Como executar o código”;
+- documentação dos módulos Python;
+- documentação das classes;
+- documentação das funções;
+- visualização dos arquivos-fonte;
+- tema visual personalizado;
+- menus personalizados;
+- gráficos e diagramas quando disponíveis.
+
+### Arquivos relacionados ao Doxygen
+
+```text
+Doxyfile                    Configuração principal do Doxygen
+layout.xml                  Layout e menus da documentação HTML
+doxygen_pages/mainpage.md   Página inicial da documentação
+doxygen_pages/execucao.md   Página com instruções de execução
+doxygen_theme/custom.css    Tema visual personalizado
+docs/html/index.html        Página inicial gerada pelo Doxygen
+abrir_documentacao.py       Script para abrir a documentação automaticamente
+```
+
+### Instalar Doxygen no Linux ou WSL
+
+```bash
+sudo apt update
+sudo apt install doxygen graphviz -y
+```
+
+Confira a instalação:
+
+```bash
+doxygen --version
+dot -V
+```
+
+### Gerar a documentação
+
+Na raiz do projeto:
+
+```bash
+doxygen Doxyfile
+```
+
+A documentação será gerada em:
+
+```text
+docs/html/index.html
+```
+
+### Abrir a documentação manualmente
+
+No Linux ou WSL:
+
+```bash
+python3 abrir_documentacao.py
+```
+
+Ou:
+
+```bash
+explorer.exe docs/html/index.html
+```
+
+No Windows PowerShell:
+
+```powershell
+py abrir_documentacao.py
+```
+
+Também é possível abrir diretamente o arquivo:
+
+```text
+docs/html/index.html
+```
+
+### Abrir a documentação junto com a aplicação
+
+Ao executar o projeto com:
+
+```bash
+python3 run.py
+```
+
+ou:
+
+```powershell
+py run.py
+```
+
+o sistema abre automaticamente:
+
+1. a aplicação web em `http://127.0.0.1:5000`;
+2. a documentação em `docs/html/index.html`.
+
+---
+
+## Executando testes
+
+Com o ambiente virtual ativado, execute:
+
+### Linux ou WSL
+
+```bash
+export PYTHONPATH=src
+python3 -m pytest -q
+```
+
+### Windows PowerShell
+
+```powershell
+$env:PYTHONPATH='src'
+py -m pytest -q
+```
+
+Resultado esperado:
+
+```text
+passed
+```
+
+A quantidade exata de testes pode variar conforme a versão do projeto.
+
+---
+
+## Logs no terminal
 
 O projeto possui logs organizados no terminal para facilitar a demonstração.
 
@@ -562,91 +690,55 @@ Por segurança, os logs não exibem senhas nem chaves completas. Valores sensív
 
 ---
 
-# Executando testes
+## Principais arquivos do projeto
 
-Com o ambiente virtual ativado, execute:
-
-## Linux ou WSL
-
-```bash
-export PYTHONPATH=src
-python3 -m pytest -q
-```
-
-## Windows PowerShell
-
-```powershell
-$env:PYTHONPATH='src'
-py -m pytest -q
-```
-
-Resultado esperado:
-
-```text
-passed
-```
-
-A quantidade exata de testes pode variar conforme a versão do projeto.
-
----
-
-# Principais arquivos do projeto
-
-## `src/kerberos_notas/kerberos/as_server.py`
+### `src/kerberos_notas/kerberos/as_server.py`
 
 Contém a lógica principal do Servidor de Autenticação, AS.
 
 Responsabilidades:
 
-* validar usuário e senha;
-* usar KDF para derivar a chave da senha;
-* gerar chave de sessão Cliente-TGS;
-* emitir o TGT.
+- validar usuário e senha;
+- usar KDF para derivar a chave da senha;
+- gerar chave de sessão Cliente-TGS;
+- emitir o TGT.
 
----
-
-## `src/kerberos_notas/kerberos/tgs_server.py`
+### `src/kerberos_notas/kerberos/tgs_server.py`
 
 Contém a lógica principal do Ticket Granting Server, TGS.
 
 Responsabilidades:
 
-* abrir e validar o TGT;
-* validar o autenticador Cliente-TGS;
-* gerar chave Cliente-Serviço;
-* emitir ticket de serviço.
+- abrir e validar o TGT;
+- validar o autenticador Cliente-TGS;
+- gerar chave Cliente-Serviço;
+- emitir ticket de serviço.
 
----
-
-## `src/kerberos_notas/notes/service.py`
+### `src/kerberos_notas/notes/service.py`
 
 Contém a lógica do Serviço de Notas protegido.
 
 Responsabilidades:
 
-* validar ticket de serviço;
-* validar autenticador Cliente-Serviço;
-* bloquear replay simples por nonce;
-* aplicar regra de permissão de professor;
-* listar notas;
-* criar notas;
-* gerar AP-REP para autenticação mútua.
+- validar ticket de serviço;
+- validar autenticador Cliente-Serviço;
+- bloquear replay simples por nonce;
+- aplicar regra de permissão de professor;
+- listar notas;
+- criar notas;
+- gerar AP-REP para autenticação mútua.
 
----
-
-## `src/kerberos_notas/rede/protocolo.py`
+### `src/kerberos_notas/rede/protocolo.py`
 
 Contém a camada básica de comunicação via socket.
 
 Responsabilidades:
 
-* enviar JSON por socket;
-* receber JSON por socket;
-* abrir conexão com servidor TCP.
+- enviar JSON por socket;
+- receber JSON por socket;
+- abrir conexão com servidor TCP.
 
----
-
-## `src/kerberos_notas/servidores/servidor_as.py`
+### `src/kerberos_notas/servidores/servidor_as.py`
 
 Servidor TCP do AS.
 
@@ -656,9 +748,7 @@ Escuta na porta:
 127.0.0.1:9001
 ```
 
----
-
-## `src/kerberos_notas/servidores/servidor_tgs.py`
+### `src/kerberos_notas/servidores/servidor_tgs.py`
 
 Servidor TCP do TGS.
 
@@ -668,9 +758,7 @@ Escuta na porta:
 127.0.0.1:9002
 ```
 
----
-
-## `src/kerberos_notas/servidores/servidor_notas.py`
+### `src/kerberos_notas/servidores/servidor_notas.py`
 
 Servidor TCP do Serviço de Notas.
 
@@ -680,116 +768,120 @@ Escuta na porta:
 127.0.0.1:9003
 ```
 
----
-
-## `src/kerberos_notas/client/routes.py`
+### `src/kerberos_notas/client/routes.py`
 
 Contém as rotas Flask.
 
 Responsabilidades:
 
-* login;
-* execução do fluxo Kerberos pelo cliente;
-* acesso à página de notas;
-* chamada dos servidores via sockets;
-* validação do AP-REP.
+- login;
+- execução do fluxo Kerberos pelo cliente;
+- acesso à página de notas;
+- chamada dos servidores via sockets;
+- validação do AP-REP.
 
----
-
-## `src/kerberos_notas/client/cliente_socket.py`
+### `src/kerberos_notas/client/cliente_socket.py`
 
 Contém as funções usadas pelo Cliente Web para chamar os servidores TCP.
 
 Responsabilidades:
 
-* chamar o AS;
-* chamar o TGS;
-* chamar o Serviço de Notas.
+- chamar o AS;
+- chamar o TGS;
+- chamar o Serviço de Notas.
 
----
-
-## `scripts/criar_usuario.py`
+### `scripts/criar_usuario.py`
 
 Script usado para cadastrar usuários.
 
 Permite criar:
 
-* aluno;
-* professor.
+- aluno;
+- professor.
 
----
-
-## `scripts/iniciar_servidores.py`
+### `scripts/iniciar_servidores.py`
 
 Script usado para iniciar simultaneamente:
 
-* AS;
-* TGS;
-* Serviço de Notas.
+- AS;
+- TGS;
+- Serviço de Notas.
+
+### `run.py`
+
+Script principal da aplicação Flask.
+
+Além de iniciar o servidor web, também abre automaticamente a aplicação e a documentação Doxygen no navegador.
+
+### `abrir_documentacao.py`
+
+Script auxiliar que abre `docs/html/index.html` no navegador padrão.
+
+Se a documentação ainda não tiver sido gerada, o script tenta executar `doxygen Doxyfile`.
 
 ---
 
-# Observações importantes de segurança
+## Observações importantes de segurança
 
 Este projeto foi desenvolvido para fins acadêmicos.
 
 Algumas decisões foram simplificadas para facilitar a implementação e a explicação:
 
-* as chaves secretas do TGS e do Serviço de Notas ficam no arquivo de configuração;
-* os dados são salvos em arquivos JSON;
-* os servidores rodam localmente em `127.0.0.1`;
-* o controle de nonces usados fica em memória;
-* não há banco de dados real;
-* não há HTTPS, pois o foco do trabalho é o Kerberos.
+- as chaves secretas do TGS e do Serviço de Notas ficam no arquivo de configuração;
+- os dados são salvos em arquivos JSON;
+- os servidores rodam localmente em `127.0.0.1`;
+- o controle de nonces usados fica em memória;
+- não há banco de dados real;
+- não há HTTPS, pois o foco do trabalho é o Kerberos.
 
 Em um ambiente real, seria necessário:
 
-* proteger melhor as chaves secretas;
-* usar banco de dados;
-* proteger os arquivos de configuração;
-* usar TLS na comunicação de rede;
-* implementar controle persistente de replay;
-* adicionar logs de auditoria com rotação;
-* melhorar validações e permissões.
+- proteger melhor as chaves secretas;
+- usar banco de dados;
+- proteger os arquivos de configuração;
+- usar TLS na comunicação de rede;
+- implementar controle persistente de replay;
+- adicionar logs de auditoria com rotação;
+- melhorar validações e permissões.
 
 ---
 
-
-# Limitações conhecidas
+## Limitações conhecidas
 
 A implementação é acadêmica e simplificada.
 
 As principais limitações são:
 
-* as chaves secretas ficam fixas no arquivo de configuração;
-* os usuários e notas são salvos em JSON;
-* a proteção contra replay usa memória local;
-* os servidores rodam localmente;
-* não há interface administrativa completa;
-* não há edição ou exclusão de notas;
-* não há banco de dados relacional.
+- as chaves secretas ficam fixas no arquivo de configuração;
+- os usuários e notas são salvos em JSON;
+- a proteção contra replay usa memória local;
+- os servidores rodam localmente;
+- não há interface administrativa completa;
+- não há edição ou exclusão de notas;
+- não há banco de dados relacional.
 
 Essas limitações não impedem a demonstração do Kerberos, pois o foco principal do trabalho é o protocolo de autenticação, e não a complexidade do Portal de Notas.
 
 ---
 
-# Resumo final
+## Resumo final
 
 Este projeto demonstra o funcionamento do Kerberos em um Portal de Notas.
 
 A implementação contempla:
 
-* AS;
-* TGS;
-* Serviço protegido;
-* autenticação por senha;
-* KDF;
-* tickets;
-* chaves de sessão;
-* autenticação mútua;
-* proteção simples contra replay;
-* comunicação por sockets;
-* execução simultânea dos servidores;
-* logs didáticos para apresentação.
+- AS;
+- TGS;
+- Serviço protegido;
+- autenticação por senha;
+- KDF;
+- tickets;
+- chaves de sessão;
+- autenticação mútua;
+- proteção simples contra replay;
+- comunicação por sockets;
+- execução simultânea dos servidores;
+- logs didáticos para apresentação;
+- documentação técnica com Doxygen.
 
 O serviço de notas é simples, mas suficiente para demonstrar o uso do protocolo Kerberos protegendo uma aplicação real.
